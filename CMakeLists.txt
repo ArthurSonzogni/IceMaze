@@ -1,0 +1,68 @@
+cmake_minimum_required (VERSION 3.11)
+
+add_subdirectory(third_party)
+
+project(IceMazeWeb
+  LANGUAGES CXX
+  VERSION 0.1.0
+)
+
+add_executable(icemaze
+  src/Level.cpp
+  src/Level.hpp
+  src/activity/Activity.hpp
+  src/activity/LevelActivity.cpp
+  src/activity/LevelActivity.hpp
+  src/activity/LevelExplorer.cpp
+  src/activity/LevelExplorer.hpp
+  src/activity/Menu.cpp
+  src/activity/Menu.hpp
+  src/main.cpp
+  src/resources.cpp
+  src/resources.hpp
+)
+target_include_directories(icemaze PRIVATE ${CMAKE_CURRENT_DIR}/src)
+target_include_directories(icemaze PRIVATE src)
+target_link_libraries(icemaze smk)
+set_target_properties(icemaze PROPERTIES CXX_STANDARD 17)
+
+# Detect emscripten is used.
+if(CMAKE_CXX_COMPILER MATCHES "/em\\+\\+(-[a-zA-Z0-9.])?$") 
+
+  # Analytics.
+  option(ADD_GOOGLE_ANALYTICS "Add google analytics script" ON)
+  if (ADD_GOOGLE_ANALYTICS)
+    file(READ ${CMAKE_CURRENT_SOURCE_DIR}/src/google-analytics.html google-analytics)
+  endif(ADD_GOOGLE_ANALYTICS)
+
+  string(APPEND CMAKE_CXX_FLAGS " -s DEMANGLE_SUPPORT=1")
+  string(APPEND CMAKE_CXX_FLAGS " -s DISABLE_EXCEPTION_CATCHING=2")
+  string(APPEND CMAKE_CXX_FLAGS " -s WASM=1")
+  string(APPEND CMAKE_CXX_FLAGS " -s TOTAL_MEMORY=134217728")
+  string(APPEND CMAKE_CXX_FLAGS " -s BINARYEN_TRAP_MODE='allow'")
+
+  # Release flags
+  #string(APPEND CMAKE_CXX_FLAGS " --closure 1")
+  #string(APPEND CMAKE_CXX_FLAGS " --js-opts 3")
+  #string(APPEND CMAKE_CXX_FLAGS " --llvm-lto 3")
+  #string(APPEND CMAKE_CXX_FLAGS " --llvm-opts 3")
+  #string(APPEND CMAKE_CXX_FLAGS " -O3")
+
+  # Copy the index.html file.
+  configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/index.html
+    ${CMAKE_CURRENT_BINARY_DIR}/index.html
+  )
+
+  configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/style.css
+    ${CMAKE_CURRENT_BINARY_DIR}/style.css
+  )
+
+  # Allow some files to be fetched.
+  file(GLOB_RECURSE files "./level/*" "./skin/*")
+  foreach(file ${files})
+    file(RELATIVE_PATH relative_file ${CMAKE_SOURCE_DIR} "${file}")
+    string(APPEND CMAKE_CXX_FLAGS " --preload-file \"${file}@/${relative_file}\"")
+  endforeach()
+endif()
