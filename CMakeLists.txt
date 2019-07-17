@@ -15,11 +15,15 @@ add_executable(icemaze
   src/activity/LevelActivity.hpp
   src/activity/LevelExplorer.cpp
   src/activity/LevelExplorer.hpp
+  src/activity/LevelGeneratorActivity.cpp
+  src/activity/LevelGeneratorActivity.hpp
   src/activity/Menu.cpp
   src/activity/Menu.hpp
   src/main.cpp
   src/resources.cpp
   src/resources.hpp
+  src/LevelGenerator.cpp
+  src/LevelGenerator.hpp
 )
 target_include_directories(icemaze PRIVATE ${CMAKE_CURRENT_DIR}/src)
 target_include_directories(icemaze PRIVATE src)
@@ -42,11 +46,11 @@ if(CMAKE_CXX_COMPILER MATCHES "/em\\+\\+(-[a-zA-Z0-9.])?$")
   string(APPEND CMAKE_CXX_FLAGS " -s BINARYEN_TRAP_MODE='allow'")
 
   # Release flags
-  #string(APPEND CMAKE_CXX_FLAGS " --closure 1")
-  #string(APPEND CMAKE_CXX_FLAGS " --js-opts 3")
-  #string(APPEND CMAKE_CXX_FLAGS " --llvm-lto 3")
-  #string(APPEND CMAKE_CXX_FLAGS " --llvm-opts 3")
-  #string(APPEND CMAKE_CXX_FLAGS " -O3")
+  string(APPEND CMAKE_CXX_FLAGS " --closure 1")
+  string(APPEND CMAKE_CXX_FLAGS " --js-opts 3")
+  string(APPEND CMAKE_CXX_FLAGS " --llvm-lto 3")
+  string(APPEND CMAKE_CXX_FLAGS " --llvm-opts 3")
+  string(APPEND CMAKE_CXX_FLAGS " -O3")
 
   # Copy the index.html file.
   configure_file(

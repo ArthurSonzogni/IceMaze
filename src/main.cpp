@@ -8,9 +8,11 @@
 #include <smk/Texture.hpp>
 #include <string>
 #include "Level.hpp"
+#include "LevelGenerator.hpp"
 #include "activity/Activity.hpp"
 #include "activity/LevelActivity.hpp"
 #include "activity/LevelExplorer.hpp"
+#include "activity/LevelGeneratorActivity.hpp"
 #include "activity/Menu.hpp"
 #include "resources.hpp"
 
@@ -73,20 +75,29 @@ class Main {
         "Quit",
     };
     main_menu_->on_enter = [&]() {
-      if (main_menu_->selected == 0) {  // Play
-        Display(pack_explorer_.get());
-        return;
+      // clang-format off
+      switch (main_menu_->selected) {
+        case 0: Display(play_menu_.get()); break;
+        case 1: Display(skin_menu_.get()); break;
+        case 2: break;
       }
-
-      if (main_menu_->selected == 1) {  // Skin
-        Display(skin_menu_.get());
-        return;
-      }
-
-      if (main_menu_->selected == 2) {  // Quit
-        return;
-      }
+      // clang-format on
     };
+
+    play_menu_ = std::make_unique<Menu>(screen_);
+    play_menu_->entries = {
+        "Human levels",
+        "Machine levels",
+    };
+    play_menu_->on_enter = [&] {
+      // clang-format off
+      switch (play_menu_->selected) {
+        case 0: Display(pack_explorer_.get()); break;
+        case 1: Display(level_generator_activity_.get()); break;
+      }
+      // clang-format on
+    };
+    play_menu_->on_escape = [&] { Display(main_menu_.get()); };
 
     // Skin menu
     skin_menu_ = std::make_unique<Menu>(screen_);
@@ -99,6 +110,10 @@ class Main {
     skin_menu_->on_escape = [&] { Display(main_menu_.get()); };
     skin_menu_->on_enter = [&] { Display(main_menu_.get()); };
 
+    // Level generator
+    level_generator_activity_ =
+        std::make_unique<LevelGeneratorActivity>(screen_);
+
     // Level pack activity
     pack_explorer_ = std::make_unique<LevelExplorer>(screen_);
     pack_explorer_->entries = GetList("../level/PackFile");
@@ -109,7 +124,7 @@ class Main {
       level_explorer_->save = GetSave(pack);
       Display(level_explorer_.get());
     };
-    pack_explorer_->on_escape = [&] { Display(main_menu_.get()); };
+    pack_explorer_->on_escape = [&] { Display(play_menu_.get()); };
 
     // Level selection activity
     level_explorer_ = std::make_unique<LevelExplorer>(screen_);
@@ -146,7 +161,14 @@ class Main {
   void PlayLevel() {
     std::string pack = pack_explorer_->entries[pack_explorer_->choice];
     std::string level = level_explorer_->entries[level_explorer_->choice];
+    {
+      auto lvl = Level("../level/" + pack + "/" + level);
+      int score = lvl.Evaluate(screen_);
+      std::cerr << "score = " << score << std::endl;
+    }
     level_activity_->level = Level("../level/" + pack + "/" + level);
+    level_activity_->level.Init(screen_);
+
     Display(level_activity_.get());
   };
 
@@ -175,10 +197,12 @@ class Main {
   smk::Screen screen_;
   Activity* activity_ = nullptr;
   std::unique_ptr<Menu> main_menu_;
+  std::unique_ptr<Menu> play_menu_;
   std::unique_ptr<Menu> skin_menu_;
   std::unique_ptr<LevelExplorer> pack_explorer_;
   std::unique_ptr<LevelExplorer> level_explorer_;
   std::unique_ptr<LevelActivity> level_activity_;
+  std::unique_ptr<LevelGeneratorActivity> level_generator_activity_;
 };
 
 void MainLoop() {

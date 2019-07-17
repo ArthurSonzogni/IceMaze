@@ -1,5 +1,5 @@
 include(FetchContent)
-#set(FETCHCONTENT_UPDATES_DISCONNECTED TRUE)
+set(FETCHCONTENT_UPDATES_DISCONNECTED TRUE)
 
 # ------------------------------------------------------------------------------
 # Freetype library for loading fonts.

@@ -48,7 +48,7 @@ void SetSkin(std::string filename) {
 #ifdef __EMSCRIPTEN__
   for (std::string path : {"/sav/Skin"}) {
 #else
-  for (std::string path : {"./skin/", "../skin/"}) {
+  for (std::string path : {"./skin/Skin", "../skin/Skin"}) {
 #endif
     {
       std::ofstream file(path);
