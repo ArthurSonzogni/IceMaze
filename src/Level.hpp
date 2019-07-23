@@ -2,11 +2,11 @@
 #define LEVEL_HEADER_GUARD_HPP
 
 #include <fstream>
+#include <functional>
+#include <random>
 #include <sstream>
 #include <string>
-#include <functional>
 #include <vector>
-#include <random>
 
 struct Position {
   int x;
@@ -24,7 +24,7 @@ struct Position {
 };
 
 namespace smk {
-  class Screen;
+class Screen;
 }
 
 enum class Direction {
@@ -57,7 +57,21 @@ class Level {
   int Evaluate(smk::Screen& screen);
   static Level Random(int width, int height);
   void Mutate(std::mt19937& random);
+
  private:
+  Direction Bounce(Direction direction, char bouncer);
+  static bool CanBounce(Direction direction, char bouncer);
+  void Stop();
+
+  void NextStep(smk::Screen& screen,
+                std::function<void()> on_win,
+                std::function<void()> on_lose);
+  void AnimationStep();
+  bool GetNewDirectionFromInput(smk::Screen& screen);
+  void teleport();
+  void getAutoTileInfo(int& gh, int& dh, int& db, int& gb, int xx, int yy);
+  void UpdateView(smk::Screen& screen);
+
   std::string title_;
   std::string author_;
   int width_;
@@ -81,18 +95,7 @@ class Level {
   float view_y;
   float view_speed = 1.0;
 
-  static Direction Bounce(Direction direction, char bouncer);
-  static bool CanBounce(Direction direction, char bouncer);
-  void Stop();
-
-  void NextStep(smk::Screen& screen,
-                std::function<void()> on_win,
-                std::function<void()> on_lose);
-  void AnimationStep();
-  bool GetNewDirectionFromInput(smk::Screen& screen);
-  void teleport();
-  void getAutoTileInfo(int& gh, int& dh, int& db, int& gb, int xx, int yy);
-  void UpdateView(smk::Screen& screen);
+  bool in_evaluate_ = false;
 };
 
 int int_of_string(std::string nstr);

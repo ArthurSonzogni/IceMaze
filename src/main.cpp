@@ -113,6 +113,7 @@ class Main {
     // Level generator
     level_generator_activity_ =
         std::make_unique<LevelGeneratorActivity>(screen_);
+    level_generator_activity_->on_escape = [&] { Display(play_menu_.get()); };
 
     // Level pack activity
     pack_explorer_ = std::make_unique<LevelExplorer>(screen_);

@@ -16,7 +16,9 @@ class LevelGeneratorActivity : public Activity {
    LevelActivity level_activity_;
    std::unique_ptr<LevelGenerator> generator;
    int best_score_ = 0;
-   int best_score_timeout_ = 0;
+   int best_score_timeout_ = 60;
+   void Start();
+   bool started_ = false;
 };
 
 #endif /* end of include guard: LEVEL_GENERATOR_ACTIVITY */

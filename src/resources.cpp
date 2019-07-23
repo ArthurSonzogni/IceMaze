@@ -31,7 +31,6 @@ bool GetSkin() {
     std::ifstream file(path + "Skin");
     if (!file)
       continue;
-    std::cerr << "Reading from" << path + "Skin" << std::endl;
     std::string line;
     getline(file, line);
     skin = line;
@@ -55,7 +54,6 @@ void SetSkin(std::string filename) {
       if (!file)
         continue;
       file << filename;
-      std::cerr << "Writting to" << path << std::endl;
     }
 #ifdef __EMSCRIPTEN__
     EM_ASM(FS.syncfs(false, function(err){console.log(err)});, 0);
@@ -95,56 +93,52 @@ smk::Texture vorteximg;
 
 void LoadResources() {
   // images
-  glassimg = smk::Texture(skin_path + "img/glass.bmp");
+  glassimg = smk::Texture(skin_path + "glass.bmp");
   glass.SetTexture(glassimg);
 
-  smk::Texture::Option nearest_filter;
-  nearest_filter.min_filter = GL_NEAREST;
-  nearest_filter.mag_filter = GL_NEAREST;
-  blockimg = smk::Texture(skin_path + "img/block.bmp", nearest_filter);
+  blockimg = smk::Texture(skin_path + "block.bmp");
   block.SetTexture(blockimg);
 
-  joueurimg = smk::Texture(skin_path + "img/joueur.bmp");
+  joueurimg = smk::Texture(skin_path + "joueur.bmp");
   joueur.SetTexture(joueurimg);
 
-  sortieimg = smk::Texture(skin_path + "img/sortie.bmp");
+  sortieimg = smk::Texture(skin_path + "sortie.bmp");
   sortie.SetTexture(sortieimg);
 
-  angleimg = smk::Texture(skin_path + "img/angle.png");
+  angleimg = smk::Texture(skin_path + "angle.png");
   angle1.SetTexture(angleimg);
-  angle2.SetTexture(angleimg);
-  angle3.SetTexture(angleimg);
-  angle4.SetTexture(angleimg);
 
+  angle2.SetTexture(angleimg);
   angle2.SetCenter(0, 32);
   angle2.SetRotation(270);
 
+  angle3.SetTexture(angleimg);
   angle3.SetCenter(32, 32);
   angle3.SetRotation(180);
 
+  angle4.SetTexture(angleimg);
   angle4.SetCenter(32, 0);
   angle4.SetRotation(90);
 
-  cleimg = smk::Texture(skin_path + "img/cle.png");
+  cleimg = smk::Texture(skin_path + "cle.png");
   cle.SetTexture(cleimg);
 
-  serrureimg = smk::Texture(skin_path + "img/serrure.bmp");
+  serrureimg = smk::Texture(skin_path + "serrure.bmp");
   serrure.SetTexture(serrureimg);
 
-  vorteximg = smk::Texture(skin_path + "img/vortex.png");
+  vorteximg = smk::Texture(skin_path + "vortex.png");
   vortex.SetTexture(vorteximg);
   vortex.SetCenter(16, 16);
 
   // sons
-  plopsb = smk::SoundBuffer(skin_path + "snd/plop.ogg");
+  plopsb = smk::SoundBuffer(skin_path + "../plop.ogg");
   plop.SetBuffer(plopsb);
 
-  boingsb = smk::SoundBuffer(skin_path + "snd/boing.ogg");
+  boingsb = smk::SoundBuffer(skin_path + "../boing.ogg");
   boing.SetBuffer(boingsb);
 
-  ouverture_clesb = smk::SoundBuffer(skin_path + "snd/ouverture_cle.ogg");
+  ouverture_clesb = smk::SoundBuffer(skin_path + "../ouverture_cle.ogg");
   ouverture_cle.SetBuffer(ouverture_clesb);
-  ouverture_cle.SetVolume(200);
 
   font_arial = smk::Font(skin_path + "../font_arial.ttf", 40);
 }

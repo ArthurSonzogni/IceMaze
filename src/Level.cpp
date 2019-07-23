@@ -1,12 +1,13 @@
 #include "Level.hpp"
+#include <queue>
+#include <random>
+#include <set>
 #include <smk/Color.hpp>
 #include <smk/Screen.hpp>
 #include <smk/Shape.hpp>
 #include <smk/Text.hpp>
 #include "resources.hpp"
-#include <queue>
-#include <set>
-#include <random>
+#include "util/auto_reset.hpp"
 
 using namespace std;
 
@@ -134,7 +135,8 @@ void Level::teleport() {
 }
 
 Direction Level::Bounce(Direction direction, char bouncer) {
-  //boing.Play();
+  if (!in_evaluate_)
+    boing.Play();
   switch (bouncer) {
     case 'o':  // coin gh
       if (direction == Direction::Up)
@@ -176,7 +178,7 @@ bool Level::CanBounce(Direction dir, char bouncer) {
 void Level::Stop() {
   next_position = current_position;
   mouvement = false;
-  if (ismoving)
+  if (ismoving && !in_evaluate_)
     plop.Play();
 }
 
@@ -283,7 +285,8 @@ void Level::NextStep(smk::Screen& screen,
     case 'd':
       if (nb_cle > 0) {
         nb_cle--;
-        ouverture_cle.Play();
+        if (!in_evaluate_)
+          ouverture_cle.Play();
         setCase(next_position, '0');
         anim = 32;
         break;
@@ -453,7 +456,6 @@ void Level::Draw(smk::Screen& screen) {
           vortex.SetRotation(-tempo * 23);
           screen.Draw(vortex);
           break;
-
         case 'j':
           joueur.SetPosition(x * 32, y*32);
           screen.Draw(joueur);
@@ -468,6 +470,8 @@ void Level::Draw(smk::Screen& screen) {
 }
 
 int Level::Evaluate(smk::Screen& screen) {
+  AutoReset<bool>(in_evaluate_, true);
+
   bool initial_position_found = false;
   for (int i = 0; i < cases_.size(); ++i) {
     if (cases_[i] == 'j') {
@@ -480,6 +484,8 @@ int Level::Evaluate(smk::Screen& screen) {
   }
   if (!initial_position_found)
     return -1;
+
+  in_evaluate_ = true;
 
   struct State {
     Position position;
@@ -510,7 +516,6 @@ int Level::Evaluate(smk::Screen& screen) {
     max_width = std::max(max_width, int(to_be_handled.size()));
     State state = to_be_handled.front();
     to_be_handled.pop();
-    //std::cerr << "position = (" << state.position.x << "," << state.position.y << ")" << std::endl;
 
     for (Direction dir : {
              Direction::Up,
@@ -583,7 +588,7 @@ void Level::Mutate(std::mt19937& random) {
 
   // Add a random block.
   {
-    int p = std::uniform_int_distribution<int>(0, 15)(random);
+    int p = std::uniform_int_distribution<int>(0, 12)(random);
     switch(p) {
       case 0: cases_[p] = '0'; break;
       case 1: cases_[p] = 'l'; break;
