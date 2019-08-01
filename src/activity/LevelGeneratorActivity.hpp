@@ -11,6 +11,8 @@ class LevelGeneratorActivity : public Activity {
    void OnEnter() override;
    void Draw() override;
    std::function<void()> on_escape = []{};
+   int width = 10;
+   int height = 10;
 
   private:
    LevelActivity level_activity_;

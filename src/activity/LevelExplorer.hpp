@@ -11,6 +11,7 @@ class LevelExplorer : public Activity {
   LevelExplorer(smk::Screen&);
   ~LevelExplorer() override = default;
   void Draw() override;
+  void OnEnter() override;
 
   std::vector<std::string> entries;
   int choice = 0;

@@ -42,6 +42,15 @@ extern smk::Texture serrureimg;
 extern smk::Texture sortieimg;
 extern smk::Texture vorteximg;
 
+extern smk::Texture texture_keyboard;
+extern smk::Sprite sprite_key_left;
+extern smk::Sprite sprite_key_right;
+extern smk::Sprite sprite_key_up;
+extern smk::Sprite sprite_key_down;
+extern smk::Sprite sprite_key_enter;
+extern smk::Sprite sprite_key_escape;
+extern smk::Texture texture_intro_screen_;
+
 void LoadResources();
 
 #endif

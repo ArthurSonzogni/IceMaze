@@ -91,7 +91,22 @@ smk::Texture serrureimg;
 smk::Texture sortieimg;
 smk::Texture vorteximg;
 
+smk::Texture texture_keyboard;
+smk::Sprite sprite_key_left;
+smk::Sprite sprite_key_right;
+smk::Sprite sprite_key_up;
+smk::Sprite sprite_key_down;
+smk::Sprite sprite_key_enter;
+smk::Sprite sprite_key_escape;
+smk::Texture texture_intro_screen_;
+
 void LoadResources() {
+  smk::Texture::Option nearest_filter;
+  nearest_filter.min_filter = GL_NEAREST;
+  nearest_filter.mag_filter = GL_NEAREST;
+  texture_intro_screen_ =
+      smk::Texture(skin_path + "../intro_screen.png", nearest_filter);
+
   // images
   glassimg = smk::Texture(skin_path + "glass.bmp");
   glass.SetTexture(glassimg);
@@ -129,6 +144,26 @@ void LoadResources() {
   vorteximg = smk::Texture(skin_path + "vortex.png");
   vortex.SetTexture(vorteximg);
   vortex.SetCenter(16, 16);
+
+  texture_keyboard = smk::Texture(skin_path + "../keyboard.png");
+
+  sprite_key_up.SetTexture(texture_keyboard);
+  sprite_key_up.SetTextureRectangle({0, 0, 32, 32});
+
+  sprite_key_right.SetTexture(texture_keyboard);
+  sprite_key_right.SetTextureRectangle({32, 0, 64, 32});
+
+  sprite_key_left.SetTexture(texture_keyboard);
+  sprite_key_left.SetTextureRectangle({0, 32, 32, 64});
+
+  sprite_key_down.SetTexture(texture_keyboard);
+  sprite_key_down.SetTextureRectangle({32, 32, 64, 64});
+
+  sprite_key_enter.SetTexture(texture_keyboard);
+  sprite_key_enter.SetTextureRectangle({0, 64, 64, 96});
+
+  sprite_key_escape.SetTexture(texture_keyboard);
+  sprite_key_escape.SetTextureRectangle({0, 96, 64, 128});
 
   // sons
   plopsb = smk::SoundBuffer(skin_path + "../plop.ogg");

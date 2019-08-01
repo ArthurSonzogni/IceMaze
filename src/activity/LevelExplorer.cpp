@@ -96,4 +96,9 @@ void LevelExplorer::Draw() {
   curseur.SetPosition(12, 50 + 40 * choice);
   screen().Draw(curseur);
   screen().Display();
+  screen().LimitFrameRate(60.0);
+}
+
+void LevelExplorer::OnEnter() {
+  yview = choice * 40 + screen().height() * 0.5;
 }

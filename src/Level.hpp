@@ -7,6 +7,8 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <array>
+#include <smk/Sound.hpp>
 
 struct Position {
   int x;
@@ -96,6 +98,9 @@ class Level {
   float view_speed = 1.0;
 
   bool in_evaluate_ = false;
+  static std::vector<smk::Sound> sounds;
+  static int sound_index;
+  void PlaySound(const smk::SoundBuffer&);
 };
 
 int int_of_string(std::string nstr);

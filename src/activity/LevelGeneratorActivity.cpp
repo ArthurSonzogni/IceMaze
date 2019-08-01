@@ -5,7 +5,7 @@ LevelGeneratorActivity::LevelGeneratorActivity(smk::Screen& screen)
     : Activity(screen), level_activity_(screen) {}
 
 void LevelGeneratorActivity::OnEnter() {
-  generator = std::make_unique<LevelGenerator>(15, 15);
+  generator = std::make_unique<LevelGenerator>(width, height);
   best_score_timeout_ = 60;
 }
 
@@ -19,7 +19,7 @@ void LevelGeneratorActivity::Draw() {
     level_activity_.on_lose = [&] { best_score_timeout_ = 1; };
     level_activity_.on_win = [&] {
       best_score_timeout_ = 60;
-      generator = std::make_unique<LevelGenerator>(15, 15);
+      generator = std::make_unique<LevelGenerator>(width, height);
     };
     level_activity_.Draw();
     return;
@@ -42,5 +42,4 @@ void LevelGeneratorActivity::Draw() {
   screen().Clear(smk::Color::Black);
   level_activity_.level.Draw(screen());
   screen().Display();
-  
 }

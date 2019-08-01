@@ -101,6 +101,6 @@ void Menu::Draw() {
   }
 
   screen().Display();
-  screen().LimitFrameRate(30.f);
+  screen().LimitFrameRate(60.f);
   time++;
 }

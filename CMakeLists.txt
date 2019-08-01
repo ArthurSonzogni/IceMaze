@@ -10,20 +10,25 @@ project(IceMazeWeb
 add_executable(icemaze
   src/Level.cpp
   src/Level.hpp
+  src/LevelGenerator.cpp
+  src/LevelGenerator.hpp
   src/activity/Activity.hpp
+  src/activity/IntroScreen.cpp
+  src/activity/IntroScreen.hpp
   src/activity/LevelActivity.cpp
   src/activity/LevelActivity.hpp
   src/activity/LevelExplorer.cpp
   src/activity/LevelExplorer.hpp
   src/activity/LevelGeneratorActivity.cpp
   src/activity/LevelGeneratorActivity.hpp
+  src/activity/LevelGeneratorSizeSelector.cpp
+  src/activity/LevelGeneratorSizeSelector.hpp
   src/activity/Menu.cpp
   src/activity/Menu.hpp
   src/main.cpp
   src/resources.cpp
   src/resources.hpp
-  src/LevelGenerator.cpp
-  src/LevelGenerator.hpp
+  src/util/auto_reset.hpp
 )
 target_include_directories(icemaze PRIVATE ${CMAKE_CURRENT_DIR}/src)
 target_include_directories(icemaze PRIVATE src)

@@ -11,6 +11,9 @@
 
 using namespace std;
 
+std::vector<smk::Sound> Level::sounds;
+int Level::sound_index = 0;
+
 Level::Level() {
   view_speed = 1.0;
 }
@@ -135,8 +138,7 @@ void Level::teleport() {
 }
 
 Direction Level::Bounce(Direction direction, char bouncer) {
-  if (!in_evaluate_)
-    boing.Play();
+  PlaySound(boingsb);
   switch (bouncer) {
     case 'o':  // coin gh
       if (direction == Direction::Up)
@@ -178,8 +180,8 @@ bool Level::CanBounce(Direction dir, char bouncer) {
 void Level::Stop() {
   next_position = current_position;
   mouvement = false;
-  if (ismoving && !in_evaluate_)
-    plop.Play();
+  if (ismoving)
+    PlaySound(plopsb);
 }
 
 bool Level::GetNewDirectionFromInput(smk::Screen& screen) {
@@ -285,8 +287,7 @@ void Level::NextStep(smk::Screen& screen,
     case 'd':
       if (nb_cle > 0) {
         nb_cle--;
-        if (!in_evaluate_)
-          ouverture_cle.Play();
+        PlaySound(ouverture_clesb);
         setCase(next_position, '0');
         anim = 32;
         break;
@@ -538,7 +539,7 @@ int Level::Evaluate(smk::Screen& screen) {
       if (lose || travel >= max_travel)
         continue;
       if (win)
-        return state.iteration + travel + number_of_walls;
+        return state.iteration + travel + number_of_walls * 0.1;
       State new_state;
       new_state.position = current_position;
       new_state.iteration = state.iteration + travel;
@@ -579,7 +580,7 @@ void Level::Mutate(std::mt19937& random) {
 
   // Remove a random wall.
   {
-    int p = std::uniform_int_distribution<int>(0, cases_.size())(random);
+    int p = std::uniform_int_distribution<int>(0, cases_.size() - 1)(random);
     if (cases_[p] == '1') {
       cases_[p] = '0';
       return;
@@ -615,4 +616,13 @@ void Level::Init(smk::Screen& screen) {
   pos.x = current_position.x * 32;
   pos.y = current_position.y * 32;
   UpdateView(screen);
+}
+
+void Level::PlaySound(const smk::SoundBuffer& snd) {
+  if (in_evaluate_)
+    return;
+  sounds.resize(4);
+  sound_index = (sound_index + 1) % sounds.size();
+  sounds[sound_index].SetBuffer(snd);
+  sounds[sound_index].Play();
 }
