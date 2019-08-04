@@ -1,5 +1,6 @@
 #include "activity/LevelGeneratorActivity.hpp"
 #include <smk/Color.hpp>
+#include "resources.hpp"
 
 LevelGeneratorActivity::LevelGeneratorActivity(smk::Screen& screen)
     : Activity(screen), level_activity_(screen) {}

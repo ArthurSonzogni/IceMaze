@@ -100,7 +100,7 @@ class Level {
   bool in_evaluate_ = false;
   static std::vector<smk::Sound> sounds;
   static int sound_index;
-  void PlaySound(const smk::SoundBuffer&);
+  void PlaySoundInternal(const smk::SoundBuffer&);
 };
 
 int int_of_string(std::string nstr);

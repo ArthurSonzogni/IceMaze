@@ -16,6 +16,7 @@
 #include "activity/LevelGeneratorActivity.hpp"
 #include "activity/LevelGeneratorSizeSelector.hpp"
 #include "activity/Menu.hpp"
+#include "activity/Credit.hpp"
 #include "resources.hpp"
 
 namespace {
@@ -81,6 +82,7 @@ class ActivityManager {
     main_menu_->entries = {
         "Play",
         "Skin",
+        "Credit",
         "Quit",
     };
     main_menu_->on_enter = [&]() {
@@ -88,7 +90,8 @@ class ActivityManager {
       switch (main_menu_->selected) {
         case 0: Display(play_menu_.get()); break;
         case 1: Display(skin_menu_.get()); break;
-        case 2: quit = true; break;
+        case 2: Display(credit_.get()); break;
+        case 3: quit = true; break;
       }
       // clang-format on
     };
@@ -162,6 +165,10 @@ class ActivityManager {
     level_activity_->on_escape = [&] { Display(level_explorer_.get()); };
     level_activity_->on_win = [&] { LevelWin(); };
 
+    // Credit
+    credit_ = std::make_unique<Credit>(screen_);
+    credit_->on_quit = [&] { Display(main_menu_.get()); };
+
     Display(intro_screen_.get());
     Loop();
   }
@@ -230,6 +237,7 @@ class ActivityManager {
   std::unique_ptr<LevelActivity> level_activity_;
   std::unique_ptr<LevelGeneratorActivity> level_generator_activity_;
   std::unique_ptr<LevelGeneratorSizeSelector> level_generator_size_selector_;
+  std::unique_ptr<Credit> credit_;
 };
 
 std::unique_ptr<ActivityManager> activity_manager;

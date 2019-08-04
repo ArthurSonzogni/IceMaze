@@ -17,6 +17,7 @@ void IntroScreen::OnEnter() {
       screen().height() / height
     ) * 10.0;
   // clang-format on
+  PlaySound(sb_intro);
 }
 
 IntroScreen::~IntroScreen() {}
@@ -28,6 +29,7 @@ void IntroScreen::Draw() {
   auto& input = screen().input();
 
   if (input.IsKeyPressed(GLFW_KEY_ENTER)) {
+    PlaySound(sb_press_enter);
     on_enter();
     return;
   }
@@ -77,17 +79,30 @@ void IntroScreen::Draw() {
   auto rectangle = smk::Shape::Square();
   int i = 10; {
     float z = 1.0;
-    rectangle.SetColor({1.f, 1.f, 1.f, 0.2 * alpha});
     rectangle.SetScale(dx * 11 * z, dy * 5 * z);
 
     float dzx = dx * 11 * (1 - z) * 0.5;
     float dzy = dy * 5 * (1 - z) * 0.5;
 
+    auto draw_rectangle = [&](){
+      rectangle.SetColor({0.f, 0.f, 0.f, alpha * 0.1});
+      for(int i = 0; i<5; ++i) {
+        rectangle.Move(0.0,-1.0);
+        screen().Draw(rectangle);
+      }
+
+      rectangle.Move(0.0,-1.0);
+      rectangle.SetColor({0.9 + 0.1 * sin(time*0.1), 0.9 + 0.1 * sin(time*0.1),
+                          0.9 + 0.1 * sin(time*0.1), alpha});
+      screen().Draw(rectangle);
+    };
+
     rectangle.SetPosition(ox - 4 * dx + dzx, oy - 1 * dx + dzy);
-    screen().Draw(rectangle);
+    draw_rectangle();
+    
 
     rectangle.SetPosition(ox - 4 * dx + dzx, oy - 7 * dx + dzy);
-    screen().Draw(rectangle);
+    draw_rectangle();
   }
 
   sprite_key_up.SetPosition(ox + 1 * dx, oy + 0 * dy);

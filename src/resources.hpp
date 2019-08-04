@@ -13,15 +13,25 @@
 std::vector<std::string> SkinList();
 bool GetSkin();
 void SetSkin(std::string filename);
+void PlaySound(const smk::SoundBuffer& snd);
 
 extern std::string skin;
 extern smk::Font font_arial;
+extern smk::Font font_arial_20;
 extern smk::Sound boing;
 extern smk::Sound ouverture_cle;
 extern smk::Sound plop;
 extern smk::SoundBuffer boingsb;
 extern smk::SoundBuffer ouverture_clesb;
 extern smk::SoundBuffer plopsb;
+extern smk::SoundBuffer sb_intro;
+extern smk::SoundBuffer sb_press_enter;
+extern smk::SoundBuffer sb_menu_select;
+extern smk::SoundBuffer sb_menu_change;
+extern smk::SoundBuffer sb_success;
+extern smk::SoundBuffer sb_get_key;
+extern smk::SoundBuffer sb_lose;
+
 extern smk::Sprite angle1;
 extern smk::Sprite angle2;
 extern smk::Sprite angle3;

@@ -1,7 +1,7 @@
 #include "resources.hpp"
+#include <fstream>
 #include <iostream>
 #include <string>
-#include <fstream>
 
 std::string skin;
 std::string skin_path;
@@ -65,12 +65,21 @@ void SetSkin(std::string filename) {
 
 // liste des image/sprite;
 smk::Font font_arial;
+smk::Font font_arial_20;
 smk::Sound boing;
 smk::Sound ouverture_cle;
 smk::Sound plop;
 smk::SoundBuffer boingsb;
 smk::SoundBuffer ouverture_clesb;
 smk::SoundBuffer plopsb;
+smk::SoundBuffer sb_intro;
+smk::SoundBuffer sb_press_enter;
+smk::SoundBuffer sb_menu_select;
+smk::SoundBuffer sb_menu_change;
+smk::SoundBuffer sb_success;
+smk::SoundBuffer sb_get_key;
+smk::SoundBuffer sb_lose;
+
 smk::Sprite angle1;
 smk::Sprite angle2;
 smk::Sprite angle3;
@@ -175,5 +184,27 @@ void LoadResources() {
   ouverture_clesb = smk::SoundBuffer(skin_path + "../ouverture_cle.ogg");
   ouverture_cle.SetBuffer(ouverture_clesb);
 
+  sb_intro = smk::SoundBuffer(skin_path + "../intro.wav");
+  sb_press_enter = smk::SoundBuffer(skin_path + "../press_enter.wav");
+  sb_menu_select = smk::SoundBuffer(skin_path + "../menu_select.wav");
+  sb_menu_change = smk::SoundBuffer(skin_path + "../menu_change.wav");
+  sb_success = smk::SoundBuffer(skin_path + "../success.wav");
+  sb_get_key = smk::SoundBuffer(skin_path + "../get_key.wav");
+  sb_lose = smk::SoundBuffer(skin_path + "../lose.wav");
+
+  // Fonts.
   font_arial = smk::Font(skin_path + "../font_arial.ttf", 40);
+  font_arial_20 = smk::Font(skin_path + "../font_arial.ttf", 20);
+}
+
+namespace {
+std::vector<smk::Sound> sounds;
+int sound_index = 0;
+}  // namespace
+
+void PlaySound(const smk::SoundBuffer& snd) {
+  sounds.resize(10);
+  sound_index = (sound_index + 1) % sounds.size();
+  sounds[sound_index].SetBuffer(snd);
+  sounds[sound_index].Play();
 }

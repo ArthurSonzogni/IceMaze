@@ -12,7 +12,10 @@ add_executable(icemaze
   src/Level.hpp
   src/LevelGenerator.cpp
   src/LevelGenerator.hpp
+  src/License.hpp
   src/activity/Activity.hpp
+  src/activity/Credit.cpp
+  src/activity/Credit.hpp
   src/activity/IntroScreen.cpp
   src/activity/IntroScreen.hpp
   src/activity/LevelActivity.cpp

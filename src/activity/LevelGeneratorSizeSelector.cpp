@@ -11,18 +11,27 @@ void LevelGeneratorSizeSelector::Draw() {
   screen().PoolEvents();
 
   auto& input = screen().input();
+  int previous_width = width;
+  int previous_height = height;
+
   if (input.IsKeyPressed(GLFW_KEY_LEFT)) --width;
   if (input.IsKeyPressed(GLFW_KEY_RIGHT)) ++width;
   if (input.IsKeyPressed(GLFW_KEY_UP)) --height;
   if (input.IsKeyPressed(GLFW_KEY_DOWN)) ++height;
+
+  if (previous_width != width || previous_height != height) 
+    PlaySound(sb_menu_change);
+
   width = std::max(4, width);
   height = std::max(4, height);
   if (input.IsKeyPressed(GLFW_KEY_ENTER) ||
       input.IsKeyPressed(GLFW_KEY_SPACE)) {
+    PlaySound(sb_menu_select);
     on_enter();
     return;
   }
   if (input.IsKeyPressed(GLFW_KEY_ESCAPE)) {
+    PlaySound(sb_menu_select);
     on_escape();
     return;
   }

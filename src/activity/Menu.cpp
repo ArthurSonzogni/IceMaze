@@ -13,11 +13,13 @@ void Menu::Draw() {
   auto& input = screen().input();
 
   if (input.IsKeyPressed(GLFW_KEY_ENTER)) {
+    PlaySound(sb_menu_select);
     on_enter();
     return;
   }
 
   if (input.IsKeyPressed(GLFW_KEY_ESCAPE)) {
+    PlaySound(sb_menu_select);
     on_escape();
     return;
   }
@@ -33,8 +35,10 @@ void Menu::Draw() {
       selected++;
 
     selected = std::max(0, std::min((int)entries.size() - 1, selected));
-    if (selected != selected_previous)
+    if (selected != selected_previous) {
+      PlaySound(sb_menu_change);
       on_change();
+    }
   }
 
   smk::View view;

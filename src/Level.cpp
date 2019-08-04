@@ -11,9 +11,6 @@
 
 using namespace std;
 
-std::vector<smk::Sound> Level::sounds;
-int Level::sound_index = 0;
-
 Level::Level() {
   view_speed = 1.0;
 }
@@ -138,7 +135,7 @@ void Level::teleport() {
 }
 
 Direction Level::Bounce(Direction direction, char bouncer) {
-  PlaySound(boingsb);
+  PlaySoundInternal(boingsb);
   switch (bouncer) {
     case 'o':  // coin gh
       if (direction == Direction::Up)
@@ -181,7 +178,7 @@ void Level::Stop() {
   next_position = current_position;
   mouvement = false;
   if (ismoving)
-    PlaySound(plopsb);
+    PlaySoundInternal(plopsb);
 }
 
 bool Level::GetNewDirectionFromInput(smk::Screen& screen) {
@@ -246,13 +243,16 @@ void Level::NextStep(smk::Screen& screen,
     case '0':  // vide
       break;
     case 's':  // sortie
+      PlaySoundInternal(sb_success);
       on_win();
       return;
     case ' ':  // hors jeu
+      PlaySoundInternal(sb_lose);
       on_lose();
       return;
     case 'c':  // cle
       setCase(current_position, '0');
+      PlaySoundInternal(sb_get_key);
       nb_cle++;
       break;
 
@@ -287,7 +287,7 @@ void Level::NextStep(smk::Screen& screen,
     case 'd':
       if (nb_cle > 0) {
         nb_cle--;
-        PlaySound(ouverture_clesb);
+        PlaySoundInternal(ouverture_clesb);
         setCase(next_position, '0');
         anim = 32;
         break;
@@ -618,11 +618,8 @@ void Level::Init(smk::Screen& screen) {
   UpdateView(screen);
 }
 
-void Level::PlaySound(const smk::SoundBuffer& snd) {
+void Level::PlaySoundInternal(const smk::SoundBuffer& snd) {
   if (in_evaluate_)
     return;
-  sounds.resize(4);
-  sound_index = (sound_index + 1) % sounds.size();
-  sounds[sound_index].SetBuffer(snd);
-  sounds[sound_index].Play();
+  PlaySound(snd);
 }

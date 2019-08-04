@@ -37,6 +37,7 @@ void LevelExplorer::Draw() {
   text.SetBlendMode(smk::BlendMode::Alpha);
 
   screen().PoolEvents();
+  int previous_choice = choice;
 
   if (screen().input().IsKeyPressed(GLFW_KEY_UP))
     choice--;
@@ -45,12 +46,17 @@ void LevelExplorer::Draw() {
     choice++;
 
   choice = std::max(0, std::min(std::min(save, int(entries.size()-1)), choice));
+  if (choice != previous_choice)
+    PlaySound(sb_menu_change);
 
-  if (screen().input().IsKeyPressed(GLFW_KEY_ENTER))
+  if (screen().input().IsKeyPressed(GLFW_KEY_ENTER)) {
+    PlaySound(sb_menu_select);
     on_enter();
+  }
 
-  if (screen().input().IsKeyPressed(GLFW_KEY_ESCAPE))
+  if (screen().input().IsKeyPressed(GLFW_KEY_ESCAPE)) {
     on_escape();
+  }
 
   // mise a jour de la vue;
   float yview_target = choice * 40 + screen().height() * 0.5;
