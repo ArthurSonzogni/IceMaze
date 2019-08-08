@@ -59,6 +59,8 @@ if(CMAKE_CXX_COMPILER MATCHES "/em\\+\\+(-[a-zA-Z0-9.])?$")
   string(APPEND CMAKE_CXX_FLAGS " --llvm-lto 3")
   string(APPEND CMAKE_CXX_FLAGS " --llvm-opts 3")
   string(APPEND CMAKE_CXX_FLAGS " -O3")
+  string(APPEND CMAKE_CXX_FLAGS " -flto")
+  string(APPEND CMAKE_CXX_FLAGS " -fno-exceptions")
 
   # Copy the index.html file.
   configure_file(

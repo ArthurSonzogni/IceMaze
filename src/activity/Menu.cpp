@@ -19,7 +19,6 @@ void Menu::Draw() {
   }
 
   if (input.IsKeyPressed(GLFW_KEY_ESCAPE)) {
-    PlaySound(sb_menu_select);
     on_escape();
     return;
   }
@@ -65,6 +64,8 @@ void Menu::Draw() {
     }
   }
 
+  float dy = 50.f- entries.size() * 20.f;
+
   for (int i = 0; i < entries.size(); ++i) {
     auto& entry = entries[i];
     smk::Text text;
@@ -75,7 +76,7 @@ void Menu::Draw() {
     float center = 320;
 
     // Shadow
-    text.SetPosition(center - text_width / 2, 220 + i * 40);
+    text.SetPosition(center - text_width / 2, 220 + i * 40 + dy);
     text.SetColor(glm::vec4(0.f, 0.f, 0.f, 0.1f));
     screen().Draw(text);
 
@@ -96,11 +97,11 @@ void Menu::Draw() {
     circle.SetColor(glm::vec4(100, 100, 100, 255) / 255.f);
 
     circle.SetPosition(center + (10 * sin(time * 0.6) + text_width * 0.5 + 20),
-                       240 + selected * 40);
+                       240 + selected * 40 + dy);
     screen().Draw(circle);
 
     circle.SetPosition(center - (10 * sin(time * 0.6) + text_width * 0.5 + 20),
-                       240 + selected * 40);
+                       240 + selected * 40 + dy);
     screen().Draw(circle);
   }
 

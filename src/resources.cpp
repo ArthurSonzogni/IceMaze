@@ -8,7 +8,7 @@ std::string skin_path;
 
 std::vector<std::string> SkinList() {
   std::vector<std::string> output;
-  for (std::string path : {"./skin/SkinList", "../skin/SkinList"}) {
+  for (std::string path : {"./skin/SkinList", "../skin/SkinList", "/etc/level/skin/SkinList"}) {
     std::ifstream file(path);
     if (!file)
       continue;
@@ -26,7 +26,7 @@ bool GetSkin() {
 #ifdef __EMSCRIPTEN__
   for (std::string path : {"/sav/"}) {
 #else
-  for (std::string path : {"./skin/", "../skin/"}) {
+  for (std::string path : {"./skin/", "../skin/", "/etc/level/skin/"}) {
 #endif
     std::ifstream file(path + "Skin");
     if (!file)
@@ -47,7 +47,7 @@ void SetSkin(std::string filename) {
 #ifdef __EMSCRIPTEN__
   for (std::string path : {"/sav/Skin"}) {
 #else
-  for (std::string path : {"./skin/Skin", "../skin/Skin"}) {
+  for (std::string path : {"./skin/Skin", "../skin/Skin", "/etc/level/skin/Skin"}) {
 #endif
     {
       std::ofstream file(path);

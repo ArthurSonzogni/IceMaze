@@ -9,7 +9,7 @@ LevelGenerator::LevelGenerator(int width, int height)
     : width_(width),
       height_(height),
       random(static_cast<std::mt19937::result_type>(std::time(nullptr))) {
-  candidates_.resize(std::max(10, 100 - int(width * height * 0.1)));
+  candidates_.resize(std::max(10, 100));
   for (auto& it : candidates_) {
     it.level = Level::Random(width, height);
     it.score = 2;
@@ -30,7 +30,6 @@ void LevelGenerator::Compute(smk::Screen& screen) {
   std::shuffle(candidates_.begin(), candidates_.end(), random);
   std::sort(candidates_.begin(), candidates_.end());
   candidates_.resize(n);
-  std::cerr << candidates_.front().score << std::endl;
 }
 
 Level LevelGenerator::Best() {

@@ -196,7 +196,6 @@ class ActivityManager {
     {
       auto lvl = Level("../level/" + pack + "/" + level);
       int score = lvl.Evaluate(screen_);
-      std::cerr << "score = " << score << std::endl;
     }
     level_activity_->level = Level("../level/" + pack + "/" + level);
     level_activity_->level.Init(screen_);

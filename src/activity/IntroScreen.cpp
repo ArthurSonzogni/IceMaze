@@ -44,7 +44,6 @@ void IntroScreen::Draw() {
     );
   // clang-format on
   zoom_ *= std::pow(zoom_target / zoom_, 0.02);
-  std::cerr << "zoom_ = " << zoom_ << std::endl;
   view.SetSize(screen().width() / zoom_, screen().height() / zoom_);
   screen().SetView(view);
 

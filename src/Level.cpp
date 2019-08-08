@@ -539,7 +539,7 @@ int Level::Evaluate(smk::Screen& screen) {
       if (lose || travel >= max_travel)
         continue;
       if (win)
-        return state.iteration + travel + number_of_walls * 0.1;
+        return state.iteration + travel + number_of_walls * 0.5;
       State new_state;
       new_state.position = current_position;
       new_state.iteration = state.iteration + travel;
