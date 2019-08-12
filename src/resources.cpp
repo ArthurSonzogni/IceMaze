@@ -3,64 +3,128 @@
 #include <iostream>
 #include <string>
 
+std::string GetEnvironmentVariable(const char* env) {
+  auto value = std::getenv(env);
+  if (value)
+    return value;
+  return std::string();
+}
+
+std::string ResourcePath() {
+  static bool initialized = false;
+  static std::string resource_path;
+  if (initialized)
+    return resource_path;
+  initialized = true;
+
+  auto SNAP = GetEnvironmentVariable("SNAP");
+
+  std::vector<std::string> path_list = {
+    // Application installed using snapcraft.
+    SNAP + "/usr/local/share/icemaze/resources",
+
+    // Application installed using "sudo make install"
+    "/usr/local/share/icemaze/resources",
+
+    // Code build and run inside ${CMAKE_CURRENT_DIRECTORY}/build
+    "../resources",
+
+    // Code build and run inside ${CMAKE_CURRENT_DIRECTORY}
+    "../resources",
+  };
+
+  for (auto& path : path_list) {
+    std::ifstream file(path + "/icemaze");
+    std::string line;
+    if (std::getline(file, line) && line == "icemaze") {
+      resource_path = path;
+    }
+  }
+
+  std::cerr << "Resource path = " << resource_path << std::endl;
+  return resource_path;
+}
+
+std::string SavePath() {
+  static bool initialized = false;
+  static std::string save_path;
+
+  if (initialized)
+    return save_path;
+  initialized = true;
+
+#ifdef __EMSCRIPTEN__
+  save_path = "/sav";
+  return save_path;
+#endif
+
+  auto SNAP_USER_COMMON = GetEnvironmentVariable("SNAP_USER_COMMON");
+  auto HOME = GetEnvironmentVariable("HOME");
+
+  if (!SNAP_USER_COMMON.empty()) {
+    save_path = SNAP_USER_COMMON;
+  } else if (!HOME.empty()) {
+    save_path = HOME;
+  } else {
+    save_path = ".";
+  }
+
+  std::cerr << "Save path = " << save_path << std::endl;
+  return save_path;
+}
+
 std::string skin;
-std::string skin_path;
+
+std::string SkinPath() {
+  return ResourcePath() + "/skin/" + skin;
+}
 
 std::vector<std::string> SkinList() {
   std::vector<std::string> output;
-  for (std::string path : {"./skin/SkinList", "../skin/SkinList", "/etc/level/skin/SkinList"}) {
-    std::ifstream file(path);
-    if (!file)
-      continue;
-    std::string line;
-    while (getline(file, line))
-      output.push_back(line);
+  std::string path = ResourcePath() + "/skin/SkinList";
+  std::ifstream file(path);
+  if (!file) {
+    std::cerr << "Skin list not found in " << path << std::endl;
     return output;
   }
+
+  std::string line;
+  while (getline(file, line))
+    output.push_back(line);
   return output;
 }
 
 bool GetSkin() {
   skin = "default";
-  skin_path = "./skin/default/";
-#ifdef __EMSCRIPTEN__
-  for (std::string path : {"/sav/"}) {
-#else
-  for (std::string path : {"./skin/", "../skin/", "/etc/level/skin/"}) {
-#endif
-    std::ifstream file(path + "Skin");
-    if (!file)
-      continue;
-    std::string line;
-    getline(file, line);
-    skin = line;
-#ifdef __EMSCRIPTEN__
-    skin_path = "./skin/" + skin + "/";
-#else
-    skin_path = path + skin + "/";
-#endif
+  std::string skin_save_path = SavePath() + "/.icemaze.skin.sav";
+  std::ifstream file(skin_save_path);
+  if (!file) {
+    SetSkin(skin);
     return true;
   }
+
+  std::string line;
+  if (getline(file, line)) {
+    skin = line;
+    return true;
+  }
+
   return false;
 }
+
 void SetSkin(std::string filename) {
-#ifdef __EMSCRIPTEN__
-  for (std::string path : {"/sav/Skin"}) {
-#else
-  for (std::string path : {"./skin/Skin", "../skin/Skin", "/etc/level/skin/Skin"}) {
-#endif
-    {
-      std::ofstream file(path);
-      if (!file)
-        continue;
-      file << filename;
-    }
-#ifdef __EMSCRIPTEN__
-    EM_ASM(FS.syncfs(false, function(err){console.log(err)});, 0);
-#endif
+  std::string skin_save_path = SavePath() + "/.icemaze.skin.sav";
+  std::ofstream file(skin_save_path);
+  if (!file) {
+    std::cerr << "Can't save to " << skin_save_path << std::endl;
     return;
   }
-  std::cerr << "Error: Not able to set skin" << std::endl;
+
+  file << filename;
+#ifdef __EMSCRIPTEN__
+  EM_ASM(FS.syncfs(false, function(err){console.log(err)});, 0);
+#endif
+  return;
 }
 
 // liste des image/sprite;
@@ -114,22 +178,22 @@ void LoadResources() {
   nearest_filter.min_filter = GL_NEAREST;
   nearest_filter.mag_filter = GL_NEAREST;
   texture_intro_screen_ =
-      smk::Texture(skin_path + "../intro_screen.png", nearest_filter);
+      smk::Texture(ResourcePath() + "/intro_screen.png", nearest_filter);
 
   // images
-  glassimg = smk::Texture(skin_path + "glass.bmp");
+  glassimg = smk::Texture(SkinPath() + "/glass.bmp");
   glass.SetTexture(glassimg);
 
-  blockimg = smk::Texture(skin_path + "block.bmp");
+  blockimg = smk::Texture(SkinPath() + "/block.bmp");
   block.SetTexture(blockimg);
 
-  joueurimg = smk::Texture(skin_path + "joueur.bmp");
+  joueurimg = smk::Texture(SkinPath() + "/joueur.bmp");
   joueur.SetTexture(joueurimg);
 
-  sortieimg = smk::Texture(skin_path + "sortie.bmp");
+  sortieimg = smk::Texture(SkinPath() + "/sortie.bmp");
   sortie.SetTexture(sortieimg);
 
-  angleimg = smk::Texture(skin_path + "angle.png");
+  angleimg = smk::Texture(SkinPath() + "/angle.png");
   angle1.SetTexture(angleimg);
 
   angle2.SetTexture(angleimg);
@@ -144,17 +208,17 @@ void LoadResources() {
   angle4.SetCenter(32, 0);
   angle4.SetRotation(90);
 
-  cleimg = smk::Texture(skin_path + "cle.png");
+  cleimg = smk::Texture(SkinPath() + "/cle.png");
   cle.SetTexture(cleimg);
 
-  serrureimg = smk::Texture(skin_path + "serrure.bmp");
+  serrureimg = smk::Texture(SkinPath() + "/serrure.bmp");
   serrure.SetTexture(serrureimg);
 
-  vorteximg = smk::Texture(skin_path + "vortex.png");
+  vorteximg = smk::Texture(SkinPath() + "/vortex.png");
   vortex.SetTexture(vorteximg);
   vortex.SetCenter(16, 16);
 
-  texture_keyboard = smk::Texture(skin_path + "../keyboard.png");
+  texture_keyboard = smk::Texture(ResourcePath() + "/keyboard.png");
 
   sprite_key_up.SetTexture(texture_keyboard);
   sprite_key_up.SetTextureRectangle({0, 0, 32, 32});
@@ -175,26 +239,26 @@ void LoadResources() {
   sprite_key_escape.SetTextureRectangle({0, 96, 64, 128});
 
   // sons
-  plopsb = smk::SoundBuffer(skin_path + "../plop.ogg");
+  plopsb = smk::SoundBuffer(ResourcePath() + "/plop.ogg");
   plop.SetBuffer(plopsb);
 
-  boingsb = smk::SoundBuffer(skin_path + "../boing.ogg");
+  boingsb = smk::SoundBuffer(ResourcePath() + "/boing.ogg");
   boing.SetBuffer(boingsb);
 
-  ouverture_clesb = smk::SoundBuffer(skin_path + "../ouverture_cle.ogg");
+  ouverture_clesb = smk::SoundBuffer(ResourcePath() + "/ouverture_cle.ogg");
   ouverture_cle.SetBuffer(ouverture_clesb);
 
-  sb_intro = smk::SoundBuffer(skin_path + "../intro.wav");
-  sb_press_enter = smk::SoundBuffer(skin_path + "../press_enter.wav");
-  sb_menu_select = smk::SoundBuffer(skin_path + "../menu_select.wav");
-  sb_menu_change = smk::SoundBuffer(skin_path + "../menu_change.wav");
-  sb_success = smk::SoundBuffer(skin_path + "../success.wav");
-  sb_get_key = smk::SoundBuffer(skin_path + "../get_key.wav");
-  sb_lose = smk::SoundBuffer(skin_path + "../lose.wav");
+  sb_intro = smk::SoundBuffer(ResourcePath() + "/intro.wav");
+  sb_press_enter = smk::SoundBuffer(ResourcePath() + "/press_enter.wav");
+  sb_menu_select = smk::SoundBuffer(ResourcePath() + "/menu_select.wav");
+  sb_menu_change = smk::SoundBuffer(ResourcePath() + "/menu_change.wav");
+  sb_success = smk::SoundBuffer(ResourcePath() + "/success.wav");
+  sb_get_key = smk::SoundBuffer(ResourcePath() + "/get_key.wav");
+  sb_lose = smk::SoundBuffer(ResourcePath() + "/lose.wav");
 
   // Fonts.
-  font_arial = smk::Font(skin_path + "../font_arial.ttf", 40);
-  font_arial_20 = smk::Font(skin_path + "../font_arial.ttf", 20);
+  font_arial = smk::Font(ResourcePath() + "/font_arial.ttf", 40);
+  font_arial_20 = smk::Font(ResourcePath() + "/font_arial.ttf", 20);
 }
 
 namespace {

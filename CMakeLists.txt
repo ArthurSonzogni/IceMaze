@@ -80,3 +80,6 @@ if(CMAKE_CXX_COMPILER MATCHES "/em\\+\\+(-[a-zA-Z0-9.])?$")
     string(APPEND CMAKE_CXX_FLAGS " --preload-file \"${file}@/${relative_file}\"")
   endforeach()
 endif()
+
+install(TARGETS icemaze RUNTIME DESTINATION "bin")
+install(DIRECTORY resources DESTINATION share/icemaze)

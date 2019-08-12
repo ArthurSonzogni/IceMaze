@@ -1,0 +1,51 @@
+name: icemaze
+version: '0.1'
+summary: A sliding block adventure.
+description: |
+  IceMaze is puzzle game.
+
+  You play a block moving on the ice. Each time you move, you are forced to
+  slide until a wall stops you. Reaching the finish position will not be easy.
+
+  About twenty levels and various blocks (locks, corner, wormhole,…)
+
+  A level generator.
+
+icon: ./resources/intro_screen.png
+grade: stable
+confinement: strict
+base: core18
+apps:
+  icemaze:
+    command: desktop-launch ${SNAP}/usr/local/bin/icemaze
+    plugs:
+      - opengl
+      - pulseaudio
+      - x11
+parts:
+  icemaze:
+    plugin: cmake
+    source: .
+    #source: "https://github.com/ArthurSonzogni/IceMaze"
+    source: .
+    source-type: git
+    source-depth: 1
+    configflags:
+      - -DCMAKE_INSTALL_PREFIX=/usr/local/
+      - -DCMAKE_BUILD_TYPE=Release
+    stage-packages:
+      - libgl1-mesa-glx
+      - libpulse0
+    after:
+      - desktop-glib-only
+  desktop-glib-only:
+    build-packages:
+    - libglib2.0-dev
+    plugin: make
+    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+    source-subdir: glib-only
+    stage-packages:
+    - libglib2.0-bin
+passthrough:
+  title: IceMaze
+  license: MIT

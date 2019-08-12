@@ -15,6 +15,9 @@ bool GetSkin();
 void SetSkin(std::string filename);
 void PlaySound(const smk::SoundBuffer& snd);
 
+std::string ResourcePath();
+std::string SavePath();
+
 extern std::string skin;
 extern smk::Font font_arial;
 extern smk::Font font_arial_20;

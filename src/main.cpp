@@ -39,11 +39,7 @@ std::vector<std::string> GetList(std::string file) {
 }
 
 int GetSave(std::string pack) {
-#ifdef __EMSCRIPTEN__
-  std::string path = "/sav/" + pack;
-#else
-  std::string path = "../level/" + pack + "/sauvegarde";
-#endif
+  std::string path = SavePath() + "/.icemaze." + pack + ".sav";
   std::ifstream file(path);
   std::string line;
   if (getline(file, line))
@@ -53,14 +49,8 @@ int GetSave(std::string pack) {
 }
 
 void SetSave(std::string pack, int value) {
-  {
-#ifdef __EMSCRIPTEN__
-    std::string path = "/sav/" + pack;
-#else
-    std::string path = "../level/" + pack + "/sauvegarde";
-#endif
-    std::ofstream(path) << value;
-  }
+  std::string path = SavePath() + "/.icemaze." + pack + ".sav";
+  std::ofstream(path) << value;
 
 #ifdef __EMSCRIPTEN__
   EM_ASM(FS.syncfs(false, function(err){console.log(err)});, 0);
@@ -144,11 +134,11 @@ class ActivityManager {
 
     // Level pack activity
     pack_explorer_ = std::make_unique<LevelExplorer>(screen_);
-    pack_explorer_->entries = GetList("../level/PackFile");
+    pack_explorer_->entries = GetList(ResourcePath() + "/level/PackFile");
     pack_explorer_->save = 999;
     pack_explorer_->on_enter = [&] {
       std::string pack = pack_explorer_->entries[pack_explorer_->choice];
-      level_explorer_->entries = GetList("../level/" + pack + "/LevelList");
+      level_explorer_->entries = GetList(ResourcePath() + "/level/" + pack + "/LevelList");
       level_explorer_->save = GetSave(pack);
       Display(level_explorer_.get());
     };
@@ -194,10 +184,10 @@ class ActivityManager {
     std::string pack = pack_explorer_->entries[pack_explorer_->choice];
     std::string level = level_explorer_->entries[level_explorer_->choice];
     {
-      auto lvl = Level("../level/" + pack + "/" + level);
+      auto lvl = Level(ResourcePath() + "/level/" + pack + "/" + level);
       int score = lvl.Evaluate(screen_);
     }
-    level_activity_->level = Level("../level/" + pack + "/" + level);
+    level_activity_->level = Level(ResourcePath() + "/level/" + pack + "/" + level);
     level_activity_->level.Init(screen_);
 
     Display(level_activity_.get());
