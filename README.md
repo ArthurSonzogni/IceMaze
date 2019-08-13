@@ -7,6 +7,10 @@ IceMaze
 
 [[**Play** online]](https://arthursonzogni.com/IceMaze/play)
 
+[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/icemaze)
+
+[![IceMaze](https://snapcraft.io/icemaze/badge.svg)](https://snapcraft.io/icemaze)
+
 # Description
 ~~~
 IceMaze is puzzle game.
