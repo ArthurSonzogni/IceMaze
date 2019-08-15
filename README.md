@@ -2,14 +2,18 @@
 
 IceMaze
 =========
-
 [[Project link]](https://arthursonzogni.com/en/IceMaze/)
 
+#### WebAssembly ‑ Play online.
 [[**Play** online]](https://arthursonzogni.com/IceMaze/play)
 
-[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/icemaze)
-
-[![IceMaze](https://snapcraft.io/icemaze/badge.svg)](https://snapcraft.io/icemaze)
+#### Snap build ‑ Play on linux
+[![icemaze](https://snapcraft.io/icemaze/badge.svg)](https://snapcraft.io/icemaze)  
+[![Snap Status](https://build.snapcraft.io/badge/ArthurSonzogni/IceMaze.svg)](https://build.snapcraft.io/user/ArthurSonzogni/IceMaze)  
+[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-white.svg)](https://snapcraft.io/icemaze)  
+~~~bash
+sudo snap install icemaze
+~~~
 
 # Description
 ~~~
