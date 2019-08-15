@@ -23,29 +23,53 @@ apps:
       - pulseaudio
       - x11
 parts:
-  icemaze:
-    plugin: cmake
-    source: .
-    #source: "https://github.com/ArthurSonzogni/IceMaze"
-    source: .
+
+  cmake:
+    source: https://github.com/Kitware/CMake
     source-type: git
     source-depth: 1
-    configflags:
-      - -DCMAKE_INSTALL_PREFIX=/usr/local/
-      - -DCMAKE_BUILD_TYPE=Release
+    plugin: cmake
+    override-build: |
+      mkdir -p build
+      cd build
+      cmake \
+        -DCMAKE_INSTALL_PREFIX=$SNAPCRAFT_STAGE/cmake \
+        $SNAPCRAFT_PART_SRC
+      make -j 4
+      make install
+
+  icemaze:
+    after: [cmake]
+    plugin: cmake
+    source: https://github.com/ArthurSonzogni/IceMaze
+    source-type: git
+    source-depth: 1
     stage-packages:
       - libgl1-mesa-glx
       - libpulse0
-    after:
-      - desktop-glib-only
-  desktop-glib-only:
+      - libpng16-16
     build-packages:
-    - libglib2.0-dev
+      - libglu-dev
+      - libssl1.0-dev
+      - libpulse-dev
+      - xorg-dev
+    override-build: |
+      $SNAPCRAFT_STAGE/cmake/bin/cmake \
+        -DCMAKE_INSTALL_PREFIX=$SNAPCRAFT_PART_INSTALL/usr/local \
+        -DCMAKE_BUILD_TYPE=Release \
+        $SNAPCRAFT_PART_SRC
+      make -j 4
+      make install
+
+  desktop-glib-only:
     plugin: make
     source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
     source-subdir: glib-only
+    build-packages:
+    - libglib2.0-dev
     stage-packages:
     - libglib2.0-bin
+
 passthrough:
   title: IceMaze
   license: MIT
