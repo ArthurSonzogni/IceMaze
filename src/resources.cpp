@@ -27,14 +27,19 @@ std::string ResourcePath() {
     "/usr/local/share/icemaze/resources",
 
     // Code build and run inside ${CMAKE_CURRENT_DIRECTORY}/build
-    "../resources",
+    "./resources",
 
     // Code build and run inside ${CMAKE_CURRENT_DIRECTORY}
     "../resources",
+
+    // Code build for WebAssembly.
+    "/resources",
   };
 
   for (auto& path : path_list) {
-    std::ifstream file(path + "/icemaze");
+    std::cerr << "path = " << path + "/icemaze" << std::endl;
+    auto file = std::ifstream(path + "/icemaze");
+
     std::string line;
     if (std::getline(file, line) && line == "icemaze") {
       resource_path = path;

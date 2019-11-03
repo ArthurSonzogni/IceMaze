@@ -74,10 +74,11 @@ if(CMAKE_CXX_COMPILER MATCHES "/em\\+\\+(-[a-zA-Z0-9.])?$")
   )
 
   # Allow some files to be fetched.
-  file(GLOB_RECURSE files "./level/*" "./skin/*")
+  file(GLOB_RECURSE files "./resources/**")
   foreach(file ${files})
     file(RELATIVE_PATH relative_file ${CMAKE_SOURCE_DIR} "${file}")
     string(APPEND CMAKE_CXX_FLAGS " --preload-file \"${file}@/${relative_file}\"")
+    MESSAGE(STATUS " --preload-file \"${file}@/${relative_file}\"")
   endforeach()
 endif()
 

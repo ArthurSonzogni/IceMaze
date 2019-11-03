@@ -17,7 +17,7 @@ confinement: strict
 base: core18
 apps:
   icemaze:
-    command: desktop-launch ${SNAP}/usr/local/bin/icemaze
+    command: ./usr/local/bin/icemaze
     plugs:
       - opengl
       - pulseaudio
@@ -61,14 +61,14 @@ parts:
       make -j 4
       make install
 
-  desktop-glib-only:
-    plugin: make
-    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
-    source-subdir: glib-only
-    build-packages:
-    - libglib2.0-dev
-    stage-packages:
-    - libglib2.0-bin
+  #desktop-glib-only:
+    #plugin: make
+    #source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+    #source-subdir: glib-only
+    #build-packages:
+    #- libglib2.0-dev
+    #stage-packages:
+    #- libglib2.0-bin
 
 passthrough:
   title: IceMaze
