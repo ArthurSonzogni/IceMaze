@@ -8,7 +8,7 @@
 class LevelGenerator {
  public:
   LevelGenerator(int width, int height);
-  void Compute(smk::Screen& screen);
+  void Compute();
   int BestScore();
   Level Best();
 

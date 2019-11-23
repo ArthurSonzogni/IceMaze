@@ -76,7 +76,7 @@ void IntroScreen::Draw() {
   float oy = (1 - 2.5 + 2) * dy + 100 * (1.0 - alpha);
 
   auto rectangle = smk::Shape::Square();
-  int i = 10; {
+  {
     float z = 1.0;
     rectangle.SetScale(dx * 11 * z, dy * 5 * z);
 

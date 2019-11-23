@@ -28,7 +28,7 @@ void LevelGeneratorActivity::Draw() {
   screen().PoolEvents();
 
   if (best_score_timeout_ > 1)
-    generator->Compute(screen());
+    generator->Compute();
 
   int best_score = generator->BestScore();
   if (best_score_ != best_score) {

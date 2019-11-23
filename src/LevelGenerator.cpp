@@ -16,7 +16,7 @@ LevelGenerator::LevelGenerator(int width, int height)
   }
 }
 
-void LevelGenerator::Compute(smk::Screen& screen) {
+void LevelGenerator::Compute() {
   int n = candidates_.size();
   for (int i = 0; i < n; ++i) {
     Level level = candidates_[i].level;
@@ -24,7 +24,7 @@ void LevelGenerator::Compute(smk::Screen& screen) {
 
     candidates_.emplace_back();
     candidates_.back().level = level;
-    candidates_.back().score = level.Evaluate(screen);
+    candidates_.back().score = level.Evaluate();
   }
 
   std::shuffle(candidates_.begin(), candidates_.end(), random);

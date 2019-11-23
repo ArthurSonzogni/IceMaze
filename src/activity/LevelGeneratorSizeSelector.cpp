@@ -63,9 +63,6 @@ void LevelGeneratorSizeSelector::Draw() {
     }
   }
 
-  static int tempo = 0;
-  float alpha = 0.5+0.5*sin(tempo++*0.1);
-
   smk::Text text;
   text.SetFont(font_arial);
   text.SetString(std::to_string(width) + " × " + std::to_string(height));

@@ -33,6 +33,8 @@ add_executable(icemaze
   src/resources.hpp
   src/util/auto_reset.hpp
 )
+target_compile_options(icemaze PRIVATE -Wall -Wextra -pedantic -Werror)
+
 target_include_directories(icemaze PRIVATE ${CMAKE_CURRENT_DIR}/src)
 target_include_directories(icemaze PRIVATE src)
 target_link_libraries(icemaze smk)

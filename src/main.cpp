@@ -104,7 +104,7 @@ class ActivityManager {
     // Skin menu
     skin_menu_ = std::make_unique<Menu>(screen_);
     skin_menu_->entries = SkinList();
-    for (int i = 0; i < skin_menu_->entries.size(); i++) {
+    for (int i = 0; i < (int)skin_menu_->entries.size(); i++) {
       if (skin == skin_menu_->entries[i])
         skin_menu_->selected = i;
     }
@@ -185,7 +185,6 @@ class ActivityManager {
     std::string level = level_explorer_->entries[level_explorer_->choice];
     {
       auto lvl = Level(ResourcePath() + "/level/" + pack + "/" + level);
-      int score = lvl.Evaluate(screen_);
     }
     level_activity_->level = Level(ResourcePath() + "/level/" + pack + "/" + level);
     level_activity_->level.Init(screen_);

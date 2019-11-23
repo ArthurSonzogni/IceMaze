@@ -11,12 +11,6 @@
 namespace {
 std::string packStatic = "";
 
-void SetSave(std::string file, int level) {
-  std::ofstream flux(file.c_str(), std::ios::out | std::ios::trunc);
-  flux << level;
-  flux.close();
-}
-
 }  // namespace
 
 LevelExplorer::LevelExplorer(smk::Screen& screen) : Activity(screen) {}
@@ -72,7 +66,7 @@ void LevelExplorer::Draw() {
   }
 
   // dessin des niveaux
-  for (int i = 0; i < entries.size(); i++) {
+  for (int i = 0; i < (int)entries.size(); i++) {
     text.SetString(entries[i]);
 
     // ombre

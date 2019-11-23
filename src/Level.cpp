@@ -9,6 +9,8 @@
 #include "resources.hpp"
 #include "util/auto_reset.hpp"
 
+void NOTREACHED() {}
+
 using namespace std;
 
 Level::Level() {
@@ -120,8 +122,8 @@ void Level::getAutoTileInfo(int& gh, int& dh, int& db, int& gb, int x, int y) {
 // clang-format on
 
 void Level::teleport() {
-  int j = current_position.x + width_ * current_position.y;
-  for (int i = 0; i < cases_.size(); ++i) {
+  size_t j = current_position.x + width_ * current_position.y;
+  for (size_t i = 0; i < cases_.size(); ++i) {
     if (cases_[i] != 't')
       continue;
     if (i == j)
@@ -142,25 +144,27 @@ Direction Level::Bounce(Direction direction, char bouncer) {
         return Direction::Right;
       else if (direction == Direction::Left)
         return Direction::Down;
-
+      break;
     case 'p':  // coin dh
       if (direction == Direction::Up)
         return Direction::Left;
       else if (direction == Direction::Right)
         return Direction::Down;
-
+      break;
     case 'm':  // coin bd
       if (direction == Direction::Down)
         return Direction::Left;
       else if (direction == Direction::Right)
         return Direction::Up;
-
+      break;
     case 'l':  // coin gb
       if (direction == Direction::Down)
         return Direction::Right;
       else if (direction == Direction::Left)
         return Direction::Up;
+      break;
   }
+  return direction;
 }
 
 // clang-format off
@@ -171,6 +175,8 @@ bool Level::CanBounce(Direction dir, char bouncer) {
     case 'm': return dir == Direction::Down || dir == Direction::Right;
     case 'l': return dir == Direction::Down || dir == Direction::Left;
   }
+  NOTREACHED();
+  return false;
 }
 // clang-format on
 
@@ -210,7 +216,7 @@ void Level::Step(smk::Screen& screen,
   }
 
   current_position = next_position;
-  NextStep(screen, on_win, on_lose);
+  NextStep(on_win, on_lose);
 
   if (anim > 0)
     return AnimationStep();
@@ -236,8 +242,7 @@ Position NextPosition(Position current, Direction direction) {
 }
 // clang-format on
 
-void Level::NextStep(smk::Screen& screen,
-                     std::function<void()> on_win,
+void Level::NextStep(std::function<void()> on_win,
                      std::function<void()> on_lose) {
   switch (char CurrentCase = getCase(current_position)) {
     case '0':  // vide
@@ -292,7 +297,7 @@ void Level::NextStep(smk::Screen& screen,
         anim = 32;
         break;
       }
-
+      [[fallthrough]];
     case '1':  // mur
     case 'i':  // invisible
       Stop();
@@ -470,11 +475,11 @@ void Level::Draw(smk::Screen& screen) {
   screen.Draw(joueur);
 }
 
-int Level::Evaluate(smk::Screen& screen) {
+int Level::Evaluate() {
   AutoReset<bool>(in_evaluate_, true);
 
   bool initial_position_found = false;
-  for (int i = 0; i < cases_.size(); ++i) {
+  for (int i = 0; i < (int)cases_.size(); ++i) {
     if (cases_[i] == 'j') {
       if (initial_position_found)
         return -1;
@@ -533,7 +538,7 @@ int Level::Evaluate(smk::Screen& screen) {
       const int max_travel = (width_ * height_);
       while (mouvement && !lose && !win && travel < max_travel) {
         current_position = next_position;
-        NextStep(screen, on_win, on_lose);
+        NextStep(on_win, on_lose);
         travel++;
       }
       if (lose || travel >= max_travel)
@@ -604,7 +609,7 @@ void Level::Mutate(std::mt19937& random) {
 }
 
 void Level::Init(smk::Screen& screen) {
-  for (int i = 0; i < cases_.size(); ++i) {
+  for (int i = 0; i < (int)cases_.size(); ++i) {
     if (cases_[i] == 'j') {
       starting_point_ = {i % width_, i / width_};
       cases_[i] = '0';

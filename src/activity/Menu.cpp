@@ -66,7 +66,7 @@ void Menu::Draw() {
 
   float dy = 50.f- entries.size() * 20.f;
 
-  for (int i = 0; i < entries.size(); ++i) {
+  for (int i = 0; i < (int)entries.size(); ++i) {
     auto& entry = entries[i];
     smk::Text text;
     text.SetFont(font_arial);

@@ -56,7 +56,7 @@ class Level {
   std::string author() { return author_; }
   std::string title() { return title_; }
 
-  int Evaluate(smk::Screen& screen);
+  int Evaluate();
   static Level Random(int width, int height);
   void Mutate(std::mt19937& random);
 
@@ -65,9 +65,7 @@ class Level {
   static bool CanBounce(Direction direction, char bouncer);
   void Stop();
 
-  void NextStep(smk::Screen& screen,
-                std::function<void()> on_win,
-                std::function<void()> on_lose);
+  void NextStep(std::function<void()> on_win, std::function<void()> on_lose);
   void AnimationStep();
   bool GetNewDirectionFromInput(smk::Screen& screen);
   void teleport();
