@@ -3,7 +3,7 @@
 #include <random>
 #include <set>
 #include <smk/Color.hpp>
-#include <smk/Screen.hpp>
+#include <smk/Window.hpp>
 #include <smk/Shape.hpp>
 #include <smk/Text.hpp>
 #include "resources.hpp"
@@ -187,8 +187,8 @@ void Level::Stop() {
     PlaySoundInternal(plopsb);
 }
 
-bool Level::GetNewDirectionFromInput(smk::Screen& screen) {
-  auto& input = screen.input();
+bool Level::GetNewDirectionFromInput(smk::Window& window) {
+  auto& input = window.input();
   if (input.IsKeyHold(GLFW_KEY_UP))
     direction = Direction::Up;
   else if (input.IsKeyHold(GLFW_KEY_DOWN))
@@ -202,7 +202,7 @@ bool Level::GetNewDirectionFromInput(smk::Screen& screen) {
   return true;
 }
 
-void Level::Step(smk::Screen& screen,
+void Level::Step(smk::Window& window,
                  std::function<void()> on_win,
                  std::function<void()> on_lose) {
   if (anim > 0)
@@ -210,7 +210,7 @@ void Level::Step(smk::Screen& screen,
 
   if (!mouvement) {
     ismoving = false;
-    if (!GetNewDirectionFromInput(screen))
+    if (!GetNewDirectionFromInput(window))
       return;
     mouvement = true;
   }
@@ -315,21 +315,21 @@ void Level::NextStep(std::function<void()> on_win,
   }
 }
 
-void Level::UpdateView(smk::Screen& screen) {
+void Level::UpdateView(smk::Window& window) {
   float target_view_x = width_ * 32.f / 2.f;
-  if (width_ * 32 > screen.width()) {
+  if (width_ * 32 > window.width()) {
     target_view_x = pos.x + 16.0;
     target_view_x =
-        std::min(width_ * 32.f - screen.width() / 2.f, target_view_x);
-    target_view_x = std::max(screen.width() / 2.f, target_view_x);
+        std::min(width_ * 32.f - window.width() / 2.f, target_view_x);
+    target_view_x = std::max(window.width() / 2.f, target_view_x);
   }
 
   float target_view_y = height_ * 32.f / 2.f;
-  if (height_ * 32 > screen.height()) {
+  if (height_ * 32 > window.height()) {
     target_view_y = pos.y + 16.0;
     target_view_y =
-        std::min(height_ * 32.f - screen.height() / 2.f, target_view_y);
-    target_view_y = std::max(screen.height() / 2.f, target_view_y);
+        std::min(height_ * 32.f - window.height() / 2.f, target_view_y);
+    target_view_y = std::max(window.height() / 2.f, target_view_y);
   }
 
   view_x += (target_view_x - view_x) * view_speed;
@@ -337,17 +337,17 @@ void Level::UpdateView(smk::Screen& screen) {
   view_speed += (0.05 - view_speed) * 0.01;
 
   smk::View view;
-  view.SetSize(int(screen.width()),  //
-               int(screen.height()));
+  view.SetSize(int(window.width()),  //
+               int(window.height()));
   view.SetCenter(int(width_ * 32 * 0.5),  //
                  int(height_ * 32 * 0.5));
   view.SetCenter(view_x, view_y);
-  screen.SetView(view);
+  window.SetView(view);
 }
 
-void Level::Draw(smk::Screen& screen) {
-  screen.Clear(smk::Color::Black);
-  UpdateView(screen);
+void Level::Draw(smk::Window& window) {
+  window.Clear(smk::Color::Black);
+  UpdateView(window);
 
   tempo++;
 
@@ -358,7 +358,7 @@ void Level::Draw(smk::Screen& screen) {
       switch (tile) {
         case '0':
           glass.SetPosition(x * 32, y * 32);
-          screen.Draw(glass);
+          window.Draw(glass);
           break;
         case '1':
           int gh, dh, gb, db;
@@ -369,102 +369,102 @@ void Level::Draw(smk::Screen& screen) {
           rectangle.top = int((gh - 1) / 2) * 16;
           rectangle.right = 16 + rectangle.left;
           rectangle.bottom = 16 + rectangle.top;
-          block.SetTextureRectangle(rectangle);
+          block = smk::Sprite(blockimg, rectangle);
           block.SetPosition(x * 32, y * 32);
-          screen.Draw(block);
+          window.Draw(block);
 
           rectangle.left = ((dh + 1) % 2) * 16;
           rectangle.top = int((dh - 1) / 2) * 16;
           rectangle.right = 16 + rectangle.left;
           rectangle.bottom = 16 + rectangle.top;
-          block.SetTextureRectangle(rectangle);
+          block = smk::Sprite(blockimg, rectangle);
           block.SetPosition(x * 32 + 16, y * 32);
-          screen.Draw(block);
+          window.Draw(block);
 
           rectangle.left = ((gb + 1) % 2) * 16;
           rectangle.top = int((gb - 1) / 2) * 16;
           rectangle.right = 16 + rectangle.left;
           rectangle.bottom = 16 + rectangle.top;
-          block.SetTextureRectangle(rectangle);
+          block = smk::Sprite(blockimg, rectangle);
           block.SetPosition(x * 32, y * 32 + 16);
-          screen.Draw(block);
+          window.Draw(block);
 
           rectangle.left = ((db + 1) % 2) * 16;
           rectangle.top = int((db - 1) / 2) * 16;
           rectangle.right = 16 + rectangle.left;
           rectangle.bottom = 16 + rectangle.top;
-          block.SetTextureRectangle(rectangle);
+          block = smk::Sprite(blockimg, rectangle);
           block.SetPosition(x * 32 + 16, y * 32 + 16);
-          screen.Draw(block);
+          window.Draw(block);
 
           break;
         case 'i': {
           smk::Rectangle rectangle;
           glass.SetPosition(x * 32, y * 32);
-          screen.Draw(glass);
-          block.SetPosition(x * 32, y * 32);
+          window.Draw(glass);
           rectangle.left = 0;
           rectangle.right = 32;
           rectangle.top = 0;
           rectangle.bottom = 32;
-          block.SetTextureRectangle(rectangle);
+          block = smk::Sprite(blockimg, rectangle);
+          block.SetPosition(x * 32, y * 32);
           float dx = x * 32 - pos.x;
           float dy = y * 32 - pos.y;
           float distance = sqrt(dx * dx + dy * dy);
           block.SetColor(glm::vec4(
               1.0, 1.0, 1.0, 1.0 - std::min(1.0, (distance - 32) / 64.0)));
-          screen.Draw(block);
+          window.Draw(block);
           block.SetColor(smk::Color::White);
         } break;
         case 's':
           sortie.SetPosition(x * 32, y * 32);
-          screen.Draw(sortie);
+          window.Draw(sortie);
           break;
         case 'l':
           glass.SetPosition(x * 32, y * 32);
-          screen.Draw(glass);
+          window.Draw(glass);
           angle1.SetPosition(x * 32, y * 32);
-          screen.Draw(angle1);
+          window.Draw(angle1);
           break;
         case 'o':
           glass.SetPosition(x * 32, y * 32);
-          screen.Draw(glass);
+          window.Draw(glass);
           angle2.SetPosition(x * 32, y * 32);
-          screen.Draw(angle2);
+          window.Draw(angle2);
           break;
         case 'p':
           glass.SetPosition(x * 32, y * 32);
-          screen.Draw(glass);
+          window.Draw(glass);
           angle3.SetPosition(x * 32, y * 32);
-          screen.Draw(angle3);
+          window.Draw(angle3);
           break;
         case 'm':
           glass.SetPosition(x * 32, y * 32);
-          screen.Draw(glass);
+          window.Draw(glass);
           angle4.SetPosition(x * 32, y * 32);
-          screen.Draw(angle4);
+          window.Draw(angle4);
           break;
         case 'c':
           glass.SetPosition(x * 32, y * 32);
-          screen.Draw(glass);
+          window.Draw(glass);
           cle.SetPosition(x * 32, y * 32);
-          screen.Draw(cle);
+          window.Draw(cle);
           break;
         case 'd':
           serrure.SetPosition(x * 32, y * 32);
-          screen.Draw(serrure);
+          window.Draw(serrure);
           break;
 
         case 't':
           glass.SetPosition(x * 32, y * 32);
-          screen.Draw(glass);
+          window.Draw(glass);
           vortex.SetPosition(x * 32 + 16, y * 32 + 16);
           vortex.SetRotation(-tempo * 23);
-          screen.Draw(vortex);
+          window.Draw(vortex);
           break;
         case 'j':
           joueur.SetPosition(x * 32, y*32);
-          screen.Draw(joueur);
+          window.Draw(joueur);
           break;
       }
     }
@@ -472,7 +472,7 @@ void Level::Draw(smk::Screen& screen) {
 
   // affichage joueur;
   joueur.SetPosition(pos.x, pos.y);
-  screen.Draw(joueur);
+  window.Draw(joueur);
 }
 
 int Level::Evaluate() {
@@ -608,7 +608,7 @@ void Level::Mutate(std::mt19937& random) {
   }
 }
 
-void Level::Init(smk::Screen& screen) {
+void Level::Init(smk::Window& window) {
   for (int i = 0; i < (int)cases_.size(); ++i) {
     if (cases_[i] == 'j') {
       starting_point_ = {i % width_, i / width_};
@@ -620,7 +620,7 @@ void Level::Init(smk::Screen& screen) {
   anim = 0;
   pos.x = current_position.x * 32;
   pos.y = current_position.y * 32;
-  UpdateView(screen);
+  UpdateView(window);
 }
 
 void Level::PlaySoundInternal(const smk::SoundBuffer& snd) {

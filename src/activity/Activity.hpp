@@ -1,11 +1,11 @@
 #ifndef ACTIVITY_H
 #define ACTIVITY_H
 
-#include <smk/Screen.hpp>
+#include <smk/Window.hpp>
 
 class Activity {
  public:
-  Activity(smk::Screen& screen) : screen_(screen) {}
+  Activity(smk::Window& window) : window_(window) {}
   virtual ~Activity() = default;
 
   virtual void Draw() = 0;
@@ -14,10 +14,10 @@ class Activity {
   virtual void OnQuit() {}
 
  protected:
-  smk::Screen& screen() { return screen_; }
+  smk::Window& window() { return window_; }
 
  private:
-  smk::Screen& screen_;
+  smk::Window& window_;
 };
 
 #endif /* end of include guard: ACTIVITY_H */

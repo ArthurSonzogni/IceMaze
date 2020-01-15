@@ -6,7 +6,7 @@
 
 class LevelActivity : public Activity {
  public:
-  LevelActivity(smk::Screen&);
+  LevelActivity(smk::Window&);
   ~LevelActivity() override;
   void Draw() override;
 

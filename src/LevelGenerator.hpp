@@ -3,7 +3,6 @@
 
 #include <random>
 #include "Level.hpp"
-#include <smk/Screen.hpp>
 
 class LevelGenerator {
  public:

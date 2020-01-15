@@ -37,11 +37,12 @@ target_compile_options(icemaze PRIVATE -Wall -Wextra -pedantic -Werror)
 
 target_include_directories(icemaze PRIVATE ${CMAKE_CURRENT_DIR}/src)
 target_include_directories(icemaze PRIVATE src)
-target_link_libraries(icemaze smk)
+target_link_libraries(icemaze PRIVATE smk)
 set_target_properties(icemaze PROPERTIES CXX_STANDARD 17)
 
 # Detect emscripten is used.
 if(CMAKE_CXX_COMPILER MATCHES "/em\\+\\+(-[a-zA-Z0-9.])?$") 
+  target_link_libraries(icemaze PRIVATE -lidbfs.js)
 
   # Analytics.
   option(ADD_GOOGLE_ANALYTICS "Add google analytics script" ON)
@@ -53,16 +54,14 @@ if(CMAKE_CXX_COMPILER MATCHES "/em\\+\\+(-[a-zA-Z0-9.])?$")
   set_property(TARGET icemaze APPEND_STRING PROPERTY LINK_FLAGS " -s DISABLE_EXCEPTION_CATCHING=2")
   set_property(TARGET icemaze APPEND_STRING PROPERTY LINK_FLAGS " -s WASM=1")
   set_property(TARGET icemaze APPEND_STRING PROPERTY LINK_FLAGS " -s TOTAL_MEMORY=134217728")
-  set_property(TARGET icemaze APPEND_STRING PROPERTY LINK_FLAGS " -s BINARYEN_TRAP_MODE='allow'")
 
   # Release flags
-  set_property(TARGET icemaze APPEND_STRING PROPERTY LINK_FLAGS " --closure 1")
+  #set_property(TARGET icemaze APPEND_STRING PROPERTY LINK_FLAGS " --closure 1")
   set_property(TARGET icemaze APPEND_STRING PROPERTY LINK_FLAGS " --js-opts 3")
   set_property(TARGET icemaze APPEND_STRING PROPERTY LINK_FLAGS " --llvm-lto 3")
   set_property(TARGET icemaze APPEND_STRING PROPERTY LINK_FLAGS " --llvm-opts 3")
   set_property(TARGET icemaze APPEND_STRING PROPERTY LINK_FLAGS " -O3")
   set_property(TARGET icemaze APPEND_STRING PROPERTY LINK_FLAGS " -flto")
-  set_property(TARGET icemaze APPEND_STRING PROPERTY LINK_FLAGS " -fno-exceptions")
 
   # Copy the index.html file.
   configure_file(

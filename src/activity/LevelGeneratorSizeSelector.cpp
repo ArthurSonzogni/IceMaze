@@ -4,13 +4,13 @@
 #include "smk/Shape.hpp"
 #include "smk/Text.hpp"
 
-LevelGeneratorSizeSelector::LevelGeneratorSizeSelector(smk::Screen& screen):
-  Activity(screen) {}
+LevelGeneratorSizeSelector::LevelGeneratorSizeSelector(smk::Window& window):
+  Activity(window) {}
 
 void LevelGeneratorSizeSelector::Draw() {
-  screen().PoolEvents();
+  window().PoolEvents();
 
-  auto& input = screen().input();
+  auto& input = window().input();
   int previous_width = width;
   int previous_height = height;
 
@@ -36,21 +36,21 @@ void LevelGeneratorSizeSelector::Draw() {
     return;
   }
 
-  screen().Clear(smk::Color::Blue);
+  window().Clear(smk::Color::Blue);
   UpdateView();
 
   // Background
-  auto view = screen().GetView();
+  auto view = window().GetView();
   float x0 = int(view.Left()) / 32 * 32 - 32;
   float x1 = int(view.Right()) / 32 * 32 + 32;
   float y0 = int(view.Top()) / 32 * 32 - 32;
   float y1 = int(view.Bottom()) / 32 * 32 + 32;
 
-  block.SetTextureRectangle({0, 0, 32, 32});
+  block = smk::Sprite(blockimg, {0, 0, 32, 32});
   for (float x = x0; x <= x1; x += 32) {
     for (float y = y0; y <= y1; y += 32) {
       block.SetPosition(x, y);
-      screen().Draw(block);
+      window().Draw(block);
     }
   }
 
@@ -59,7 +59,7 @@ void LevelGeneratorSizeSelector::Draw() {
   for (int x = 0; x < width; ++x) {
     for (int y = 0; y < height; ++y) {
       inside.SetPosition(x * 32, y * 32);
-      screen().Draw(inside);
+      window().Draw(inside);
     }
   }
 
@@ -67,18 +67,18 @@ void LevelGeneratorSizeSelector::Draw() {
   text.SetFont(font_arial);
   text.SetString(std::to_string(width) + " × " + std::to_string(height));
   auto dimension = text.ComputeDimensions();
-  float scale = (view.Right() - view.Left()) / screen().width();
+  float scale = (view.Right() - view.Left()) / window().width();
   text.SetPosition(width * 16.f - dimension.x * 0.5 * scale,
                    height * 16.f - dimension.y * 0.5 * scale);
   text.SetColor(smk::Color::Black);
   text.SetScale(scale, scale);
-  screen().Draw(text);
+  window().Draw(text);
 
   {
     smk::View view;
-    view.SetSize(screen().width(), screen().height());
-    view.SetCenter(screen().width() * 0.5, screen().height() * 0.5);
-    screen().SetView(view);
+    view.SetSize(window().width(), window().height());
+    view.SetCenter(window().width() * 0.5, window().height() * 0.5);
+    window().SetView(view);
   }
 
 
@@ -91,7 +91,7 @@ void LevelGeneratorSizeSelector::Draw() {
   auto dimension2 = level_size_text.ComputeDimensions();
 
   auto rectangle = smk::Shape::Square();
-  rectangle.SetScale(screen().width(), dimension2.y + 20);
+  rectangle.SetScale(window().width(), dimension2.y + 20);
   rectangle.SetColor({1.0, 1.0, 1.0, 0.5});
 
   float space_between_key = 32.f;
@@ -114,24 +114,24 @@ void LevelGeneratorSizeSelector::Draw() {
     it->SetColor(smk::Color::White);
   }
 
-  screen().Draw(rectangle);
-  screen().Draw(level_size_text);
-  screen().Draw(sprite_key_left);
-  screen().Draw(sprite_key_right);
-  screen().Draw(sprite_key_up);
-  screen().Draw(sprite_key_down);
-  screen().Draw(sprite_key_enter);
+  window().Draw(rectangle);
+  window().Draw(level_size_text);
+  window().Draw(sprite_key_left);
+  window().Draw(sprite_key_right);
+  window().Draw(sprite_key_up);
+  window().Draw(sprite_key_down);
+  window().Draw(sprite_key_enter);
 
-  screen().Display();
-  screen().LimitFrameRate(60.0);
+  window().Display();
+  window().LimitFrameRate(60.0);
 }
 
 void LevelGeneratorSizeSelector::UpdateView() {
   float target_view_x = width * 0.5 * 32.f;
   float target_view_y = height * 0.5f * 32.f;
   float target_zoom =
-      std::max(1.f, std::max(width * 40.f / screen().width(),
-                             height * 40.f / screen().height()));
+      std::max(1.f, std::max(width * 40.f / window().width(),
+                             height * 40.f / window().height()));
 
   const float view_speed = 0.05;
   view_x_ += (target_view_x - view_x_) * view_speed;
@@ -139,8 +139,8 @@ void LevelGeneratorSizeSelector::UpdateView() {
   view_zoom_ += (target_zoom - view_zoom_) * view_speed;
 
   smk::View view;
-  view.SetSize(int(screen().width()) * view_zoom_,
-               int(screen().height()) * view_zoom_);
+  view.SetSize(int(window().width()) * view_zoom_,
+               int(window().height()) * view_zoom_);
   view.SetCenter(view_x_, view_y_);
-  screen().SetView(view);
+  window().SetView(view);
 }

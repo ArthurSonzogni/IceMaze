@@ -2,8 +2,8 @@
 #include <smk/Color.hpp>
 #include "resources.hpp"
 
-LevelGeneratorActivity::LevelGeneratorActivity(smk::Screen& screen)
-    : Activity(screen), level_activity_(screen) {}
+LevelGeneratorActivity::LevelGeneratorActivity(smk::Window& window)
+    : Activity(window), level_activity_(window) {}
 
 void LevelGeneratorActivity::OnEnter() {
   generator = std::make_unique<LevelGenerator>(width, height);
@@ -11,7 +11,7 @@ void LevelGeneratorActivity::OnEnter() {
 }
 
 void LevelGeneratorActivity::Draw() {
-  if (screen().input().IsKeyPressed(GLFW_KEY_ESCAPE)) {
+  if (window().input().IsKeyPressed(GLFW_KEY_ESCAPE)) {
     on_escape();
     return;
   }
@@ -25,7 +25,7 @@ void LevelGeneratorActivity::Draw() {
     level_activity_.Draw();
     return;
   }
-  screen().PoolEvents();
+  window().PoolEvents();
 
   if (best_score_timeout_ > 1)
     generator->Compute();
@@ -38,9 +38,9 @@ void LevelGeneratorActivity::Draw() {
 
   best_score_timeout_--;
   level_activity_.level = generator->Best();
-  level_activity_.level.Init(screen());
+  level_activity_.level.Init(window());
 
-  screen().Clear(smk::Color::Black);
-  level_activity_.level.Draw(screen());
-  screen().Display();
+  window().Clear(smk::Color::Black);
+  level_activity_.level.Draw(window());
+  window().Display();
 }

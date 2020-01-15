@@ -4,7 +4,7 @@
 #include "resources.hpp"
 #include "License.hpp"
 
-Credit::Credit(smk::Screen& screen) : Activity(screen) {}
+Credit::Credit(smk::Window& window) : Activity(window) {}
 void Credit::OnEnter() {
   view_x = 0;
   view_y = 0;
@@ -14,8 +14,8 @@ Credit::~Credit() {}
 
 void Credit::Draw() {
   // Input.
-  screen().PoolEvents();
-  auto& input = screen().input();
+  window().PoolEvents();
+  auto& input = window().input();
 
   if (input.IsKeyPressed(GLFW_KEY_ENTER) ||
       input.IsKeyPressed(GLFW_KEY_ESCAPE) ||
@@ -29,25 +29,25 @@ void Credit::Draw() {
   if (input.IsKeyHold(GLFW_KEY_UP)) view_y -= 10;
   if (input.IsKeyHold(GLFW_KEY_DOWN)) view_y += 10;
 
-  screen().Clear({0.3, 0.3, 0.2, 1.0});
+  window().Clear({0.3, 0.3, 0.2, 1.0});
   smk::View view;
-  view.SetCenter(screen().width() * 0.5 + view_x, screen().height() * 0.5 + view_y);
-  view.SetSize(screen().width(), screen().height());
-  screen().SetView(view);
+  view.SetCenter(window().width() * 0.5 + view_x, window().height() * 0.5 + view_y);
+  view.SetSize(window().width(), window().height());
+  window().SetView(view);
 
   auto draw = [&](smk::Transformable& text, glm::vec4 color, int style = 0) {
     text.SetColor(smk::Color::Black);
-    screen().Draw(text);
+    window().Draw(text);
 
     text.Move(0, -3);
     if (style == 1)
       text.SetColor(smk::Color::White);
     if (style != 2)
-      screen().Draw(text);
+      window().Draw(text);
 
     text.Move(0, +1.5);
     text.SetColor(color);
-    screen().Draw(text);
+    window().Draw(text);
   };
 
   int y = 0;
@@ -102,6 +102,6 @@ void Credit::Draw() {
     y += 40;
   }
 
-  screen().Display();
-  screen().LimitFrameRate(30.f);
+  window().Display();
+  window().LimitFrameRate(30.f);
 }

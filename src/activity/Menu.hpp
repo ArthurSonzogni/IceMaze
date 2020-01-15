@@ -8,7 +8,7 @@
 
 class Menu : public Activity {
  public:
-  Menu(smk::Screen&);
+  Menu(smk::Window&);
   ~Menu() override;
   void Draw() override;
 

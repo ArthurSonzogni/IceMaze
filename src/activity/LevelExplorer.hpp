@@ -8,7 +8,7 @@
 
 class LevelExplorer : public Activity {
  public:
-  LevelExplorer(smk::Screen&);
+  LevelExplorer(smk::Window&);
   ~LevelExplorer() override = default;
   void Draw() override;
   void OnEnter() override;

@@ -7,21 +7,21 @@
 
 namespace {}  // namespace
 
-LevelActivity::LevelActivity(smk::Screen& screen) : Activity(screen) {}
+LevelActivity::LevelActivity(smk::Window& window) : Activity(window) {}
 LevelActivity::~LevelActivity() {}
 
 void LevelActivity::Draw() {
-  screen().PoolEvents();
-  auto& input = screen().input();
+  window().PoolEvents();
+  auto& input = window().input();
 
   if (input.IsKeyPressed(GLFW_KEY_ESCAPE)) {
     on_escape();
     return;
   }
 
-  level.Step(screen(), on_win, on_lose);
-  level.Draw(screen());
+  level.Step(window(), on_win, on_lose);
+  level.Draw(window());
 
-  screen().Display();
-  screen().LimitFrameRate(60.0);
+  window().Display();
+  window().LimitFrameRate(60.0);
 }

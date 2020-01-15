@@ -8,7 +8,7 @@
 
 class Credit : public Activity {
  public:
-  Credit(smk::Screen&);
+  Credit(smk::Window&);
   ~Credit() override;
   void Draw() override;
   void OnEnter() override;

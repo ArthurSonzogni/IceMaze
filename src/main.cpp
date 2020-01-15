@@ -60,15 +60,15 @@ void SetSave(std::string pack, int value) {
 class ActivityManager {
  public:
   ActivityManager() {
-    screen_ = smk::Screen(640, 480, "InTheCube");
+    window_ = smk::Window(640, 480, "InTheCube");
     skin_loaded = GetSkin();
     LoadResources();
 
-    intro_screen_ = std::make_unique<IntroScreen>(screen_);
+    intro_screen_ = std::make_unique<IntroScreen>(window_);
     intro_screen_->on_enter = [&] { Display(main_menu_.get()); };
 
     // First the main menu.
-    main_menu_ = std::make_unique<Menu>(screen_);
+    main_menu_ = std::make_unique<Menu>(window_);
     main_menu_->entries = {
         "Play",
         "Skin",
@@ -86,7 +86,7 @@ class ActivityManager {
       // clang-format on
     };
 
-    play_menu_ = std::make_unique<Menu>(screen_);
+    play_menu_ = std::make_unique<Menu>(window_);
     play_menu_->entries = {
         "Human levels",
         "Machine levels",
@@ -102,7 +102,7 @@ class ActivityManager {
     play_menu_->on_escape = [&] { Display(main_menu_.get()); };
 
     // Skin menu
-    skin_menu_ = std::make_unique<Menu>(screen_);
+    skin_menu_ = std::make_unique<Menu>(window_);
     skin_menu_->entries = SkinList();
     for (int i = 0; i < (int)skin_menu_->entries.size(); i++) {
       if (skin == skin_menu_->entries[i])
@@ -114,7 +114,7 @@ class ActivityManager {
 
     // Level generator size selector
     level_generator_size_selector_ =
-        std::make_unique<LevelGeneratorSizeSelector>(screen_);
+        std::make_unique<LevelGeneratorSizeSelector>(window_);
     level_generator_size_selector_->on_enter = [&]() {
       level_generator_activity_->width = level_generator_size_selector_->width;
       level_generator_activity_->height =
@@ -127,13 +127,13 @@ class ActivityManager {
 
     // Level generator
     level_generator_activity_ =
-        std::make_unique<LevelGeneratorActivity>(screen_);
+        std::make_unique<LevelGeneratorActivity>(window_);
     level_generator_activity_->on_escape = [&] {
       Display(level_generator_size_selector_.get());
     };
 
     // Level pack activity
-    pack_explorer_ = std::make_unique<LevelExplorer>(screen_);
+    pack_explorer_ = std::make_unique<LevelExplorer>(window_);
     pack_explorer_->entries = GetList(ResourcePath() + "/level/PackFile");
     pack_explorer_->save = 999;
     pack_explorer_->on_enter = [&] {
@@ -145,18 +145,18 @@ class ActivityManager {
     pack_explorer_->on_escape = [&] { Display(play_menu_.get()); };
 
     // Level selection activity
-    level_explorer_ = std::make_unique<LevelExplorer>(screen_);
+    level_explorer_ = std::make_unique<LevelExplorer>(window_);
     level_explorer_->on_enter = [&] { PlayLevel(); };
     level_explorer_->on_escape = [&] { Display(pack_explorer_.get()); };
 
     // Level activity
-    level_activity_ = std::make_unique<LevelActivity>(screen_);
+    level_activity_ = std::make_unique<LevelActivity>(window_);
     level_activity_->on_lose = [&] { PlayLevel(); };
     level_activity_->on_escape = [&] { Display(level_explorer_.get()); };
     level_activity_->on_win = [&] { LevelWin(); };
 
     // Credit
-    credit_ = std::make_unique<Credit>(screen_);
+    credit_ = std::make_unique<Credit>(window_);
     credit_->on_quit = [&] { Display(main_menu_.get()); };
 
     Display(intro_screen_.get());
@@ -187,7 +187,7 @@ class ActivityManager {
       auto lvl = Level(ResourcePath() + "/level/" + pack + "/" + level);
     }
     level_activity_->level = Level(ResourcePath() + "/level/" + pack + "/" + level);
-    level_activity_->level.Init(screen_);
+    level_activity_->level.Init(window_);
 
     Display(level_activity_.get());
   };
@@ -214,7 +214,7 @@ class ActivityManager {
  private:
   bool skin_loaded = false;
 
-  smk::Screen screen_;
+  smk::Window window_;
   Activity* activity_ = nullptr;
   std::unique_ptr<IntroScreen> intro_screen_;
   std::unique_ptr<Menu> main_menu_;

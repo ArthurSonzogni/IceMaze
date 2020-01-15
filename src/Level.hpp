@@ -26,7 +26,7 @@ struct Position {
 };
 
 namespace smk {
-class Screen;
+class Window;
 }
 
 enum class Direction {
@@ -44,11 +44,11 @@ class Level {
   char getCase(Position pos);
   void setCase(Position pos, char c);
 
-  void Init(smk::Screen& screen);
-  void Step(smk::Screen& screen,
+  void Init(smk::Window& window);
+  void Step(smk::Window& window,
             std::function<void()> on_win,
             std::function<void()> on_lose);
-  void Draw(smk::Screen& screen);
+  void Draw(smk::Window& window);
 
   int height() { return height_; }
   int width() { return width_; }
@@ -67,10 +67,10 @@ class Level {
 
   void NextStep(std::function<void()> on_win, std::function<void()> on_lose);
   void AnimationStep();
-  bool GetNewDirectionFromInput(smk::Screen& screen);
+  bool GetNewDirectionFromInput(smk::Window& window);
   void teleport();
   void getAutoTileInfo(int& gh, int& dh, int& db, int& gb, int xx, int yy);
-  void UpdateView(smk::Screen& screen);
+  void UpdateView(smk::Window& window);
 
   std::string title_;
   std::string author_;

@@ -6,7 +6,7 @@
 
 class LevelGeneratorSizeSelector : public Activity {
   public:
-   LevelGeneratorSizeSelector(smk::Screen& screen);
+   LevelGeneratorSizeSelector(smk::Window& window);
    void Draw() override;
 
    std::function<void()> on_enter = [] {};

@@ -11,7 +11,7 @@ LevelGenerator::LevelGenerator(int width, int height)
       random(static_cast<std::mt19937::result_type>(std::time(nullptr))) {
   candidates_.resize(std::max(10, 100));
   for (auto& it : candidates_) {
-    it.level = Level::Random(width, height);
+    it.level = Level::Random(width_, height_);
     it.score = 2;
   }
 }

@@ -7,7 +7,7 @@
 
 class LevelGeneratorActivity : public Activity {
   public:
-   LevelGeneratorActivity(smk::Screen& screen);
+   LevelGeneratorActivity(smk::Window& window);
    void OnEnter() override;
    void Draw() override;
    std::function<void()> on_escape = []{};

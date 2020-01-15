@@ -8,7 +8,7 @@
 
 class IntroScreen : public Activity {
  public:
-  IntroScreen(smk::Screen&);
+  IntroScreen(smk::Window&);
   ~IntroScreen() override;
   void Draw() override;
   void OnEnter() override;
