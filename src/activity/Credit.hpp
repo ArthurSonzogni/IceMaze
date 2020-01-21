@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include "activity/Activity.hpp"
+#include "activity/BackButton.hpp"
 
 class Credit : public Activity {
  public:
@@ -15,8 +16,10 @@ class Credit : public Activity {
   std::function<void()> on_quit = [] {};
 
  private:
-  int view_x = 0;
-  int view_y = 0;
+  glm::vec2 last_cursor_position;
+  glm::vec2 view_;
+  glm::vec2 view_speed_;
+  BackButton back_button_;
 };
 
 #endif /* end of include guard: ACTIVITY_CREDIT */

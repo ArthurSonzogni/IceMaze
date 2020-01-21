@@ -3,7 +3,7 @@
 #include <random>
 #include <set>
 #include <smk/Color.hpp>
-#include <smk/Window.hpp>
+#include <smk/RenderTarget.hpp>
 #include <smk/Shape.hpp>
 #include <smk/Text.hpp>
 #include "resources.hpp"
@@ -136,35 +136,35 @@ void Level::teleport() {
   }
 }
 
-Direction Level::Bounce(Direction direction, char bouncer) {
+Direction Level::Bounce(Direction direction_, char bouncer) {
   PlaySoundInternal(boingsb);
   switch (bouncer) {
     case 'o':  // coin gh
-      if (direction == Direction::Up)
+      if (direction_ == Direction::Up)
         return Direction::Right;
-      else if (direction == Direction::Left)
+      else if (direction_ == Direction::Left)
         return Direction::Down;
       break;
     case 'p':  // coin dh
-      if (direction == Direction::Up)
+      if (direction_ == Direction::Up)
         return Direction::Left;
-      else if (direction == Direction::Right)
+      else if (direction_ == Direction::Right)
         return Direction::Down;
       break;
     case 'm':  // coin bd
-      if (direction == Direction::Down)
+      if (direction_ == Direction::Down)
         return Direction::Left;
-      else if (direction == Direction::Right)
+      else if (direction_ == Direction::Right)
         return Direction::Up;
       break;
     case 'l':  // coin gb
-      if (direction == Direction::Down)
+      if (direction_ == Direction::Down)
         return Direction::Right;
-      else if (direction == Direction::Left)
+      else if (direction_ == Direction::Left)
         return Direction::Up;
       break;
   }
-  return direction;
+  return direction_;
 }
 
 // clang-format off
@@ -182,37 +182,20 @@ bool Level::CanBounce(Direction dir, char bouncer) {
 
 void Level::Stop() {
   next_position = current_position;
-  mouvement = false;
-  if (ismoving)
+  direction_ = Direction::None;
+  if (is_moving_)
     PlaySoundInternal(plopsb);
 }
 
-bool Level::GetNewDirectionFromInput(smk::Window& window) {
-  auto& input = window.input();
-  if (input.IsKeyHold(GLFW_KEY_UP))
-    direction = Direction::Up;
-  else if (input.IsKeyHold(GLFW_KEY_DOWN))
-    direction = Direction::Down;
-  else if (input.IsKeyHold(GLFW_KEY_LEFT))
-    direction = Direction::Left;
-  else if (input.IsKeyHold(GLFW_KEY_RIGHT))
-    direction = Direction::Right;
-  else
-    return false;
-  return true;
-}
-
-void Level::Step(smk::Window& window,
+void Level::Step(Direction input,
                  std::function<void()> on_win,
                  std::function<void()> on_lose) {
   if (anim > 0)
     return AnimationStep();
 
-  if (!mouvement) {
-    ismoving = false;
-    if (!GetNewDirectionFromInput(window))
-      return;
-    mouvement = true;
+  if (direction_ == Direction::None) {
+    is_moving_ = false;
+    direction_ = input;
   }
 
   current_position = next_position;
@@ -225,18 +208,19 @@ void Level::Step(smk::Window& window,
 void Level::AnimationStep() {
   const int step = 8;
   anim -= step;
-  ismoving = true;
+  is_moving_ = true;
   pos.x = anim * current_position.x + (32 - anim) * next_position.x;
   pos.y = anim * current_position.y + (32 - anim) * next_position.y;
 }
 
 // clang-format off
-Position NextPosition(Position current, Direction direction) {
-  switch (direction) {
+Position NextPosition(Position current, Direction direction_) {
+  switch (direction_) {
     case Direction::Up:    current.y -= 1; break;
     case Direction::Down:  current.y += 1; break;
     case Direction::Left:  current.x -= 1; break;
     case Direction::Right: current.x += 1; break;
+    case Direction::None: NOTREACHED(); break;
   }
   return current;
 }
@@ -265,8 +249,8 @@ void Level::NextStep(std::function<void()> on_win,
     case 'p':  // coin dh
     case 'm':  // coin bd
     case 'l':  // coin gb
-      if (CanBounce(direction, CurrentCase)) {
-        direction = Bounce(direction, CurrentCase);
+      if (CanBounce(direction_, CurrentCase)) {
+        direction_ = Bounce(direction_, CurrentCase);
       } else {
         Stop();
         return;
@@ -277,7 +261,10 @@ void Level::NextStep(std::function<void()> on_win,
       break;
   }
 
-  next_position = NextPosition(current_position, direction);
+  if (direction_ == Direction::None)
+    return;
+
+  next_position = NextPosition(current_position, direction_);
   char NextCase = getCase(next_position);
 
   switch (NextCase) {
@@ -307,7 +294,7 @@ void Level::NextStep(std::function<void()> on_win,
     case 'p':  // coin dh
     case 'm':  // coin bd
     case 'l':  // coin gb
-      if (CanBounce(direction, NextCase))
+      if (CanBounce(direction_, NextCase))
         anim = 32;
       else
         Stop();
@@ -315,21 +302,21 @@ void Level::NextStep(std::function<void()> on_win,
   }
 }
 
-void Level::UpdateView(smk::Window& window) {
+void Level::UpdateView(smk::RenderTarget& surface) {
   float target_view_x = width_ * 32.f / 2.f;
-  if (width_ * 32 > window.width()) {
+  if (width_ * 32 > surface.width()) {
     target_view_x = pos.x + 16.0;
     target_view_x =
-        std::min(width_ * 32.f - window.width() / 2.f, target_view_x);
-    target_view_x = std::max(window.width() / 2.f, target_view_x);
+        std::min(width_ * 32.f - surface.width() / 2.f, target_view_x);
+    target_view_x = std::max(surface.width() / 2.f, target_view_x);
   }
 
   float target_view_y = height_ * 32.f / 2.f;
-  if (height_ * 32 > window.height()) {
+  if (height_ * 32 > surface.height()) {
     target_view_y = pos.y + 16.0;
     target_view_y =
-        std::min(height_ * 32.f - window.height() / 2.f, target_view_y);
-    target_view_y = std::max(window.height() / 2.f, target_view_y);
+        std::min(height_ * 32.f - surface.height() / 2.f, target_view_y);
+    target_view_y = std::max(surface.height() / 2.f, target_view_y);
   }
 
   view_x += (target_view_x - view_x) * view_speed;
@@ -337,17 +324,17 @@ void Level::UpdateView(smk::Window& window) {
   view_speed += (0.05 - view_speed) * 0.01;
 
   smk::View view;
-  view.SetSize(int(window.width()),  //
-               int(window.height()));
+  view.SetSize(int(surface.width()),  //
+               int(surface.height()));
   view.SetCenter(int(width_ * 32 * 0.5),  //
                  int(height_ * 32 * 0.5));
   view.SetCenter(view_x, view_y);
-  window.SetView(view);
+  surface.SetView(view);
 }
 
-void Level::Draw(smk::Window& window) {
-  window.Clear(smk::Color::Black);
-  UpdateView(window);
+void Level::Draw(smk::RenderTarget& surface) {
+  surface.Clear(smk::Color::Black);
+  UpdateView(surface);
 
   tempo++;
 
@@ -358,7 +345,7 @@ void Level::Draw(smk::Window& window) {
       switch (tile) {
         case '0':
           glass.SetPosition(x * 32, y * 32);
-          window.Draw(glass);
+          surface.Draw(glass);
           break;
         case '1':
           int gh, dh, gb, db;
@@ -371,7 +358,7 @@ void Level::Draw(smk::Window& window) {
           rectangle.bottom = 16 + rectangle.top;
           block = smk::Sprite(blockimg, rectangle);
           block.SetPosition(x * 32, y * 32);
-          window.Draw(block);
+          surface.Draw(block);
 
           rectangle.left = ((dh + 1) % 2) * 16;
           rectangle.top = int((dh - 1) / 2) * 16;
@@ -379,7 +366,7 @@ void Level::Draw(smk::Window& window) {
           rectangle.bottom = 16 + rectangle.top;
           block = smk::Sprite(blockimg, rectangle);
           block.SetPosition(x * 32 + 16, y * 32);
-          window.Draw(block);
+          surface.Draw(block);
 
           rectangle.left = ((gb + 1) % 2) * 16;
           rectangle.top = int((gb - 1) / 2) * 16;
@@ -387,7 +374,7 @@ void Level::Draw(smk::Window& window) {
           rectangle.bottom = 16 + rectangle.top;
           block = smk::Sprite(blockimg, rectangle);
           block.SetPosition(x * 32, y * 32 + 16);
-          window.Draw(block);
+          surface.Draw(block);
 
           rectangle.left = ((db + 1) % 2) * 16;
           rectangle.top = int((db - 1) / 2) * 16;
@@ -395,13 +382,13 @@ void Level::Draw(smk::Window& window) {
           rectangle.bottom = 16 + rectangle.top;
           block = smk::Sprite(blockimg, rectangle);
           block.SetPosition(x * 32 + 16, y * 32 + 16);
-          window.Draw(block);
+          surface.Draw(block);
 
           break;
         case 'i': {
           smk::Rectangle rectangle;
           glass.SetPosition(x * 32, y * 32);
-          window.Draw(glass);
+          surface.Draw(glass);
           rectangle.left = 0;
           rectangle.right = 32;
           rectangle.top = 0;
@@ -413,58 +400,58 @@ void Level::Draw(smk::Window& window) {
           float distance = sqrt(dx * dx + dy * dy);
           block.SetColor(glm::vec4(
               1.0, 1.0, 1.0, 1.0 - std::min(1.0, (distance - 32) / 64.0)));
-          window.Draw(block);
+          surface.Draw(block);
           block.SetColor(smk::Color::White);
         } break;
         case 's':
           sortie.SetPosition(x * 32, y * 32);
-          window.Draw(sortie);
+          surface.Draw(sortie);
           break;
         case 'l':
           glass.SetPosition(x * 32, y * 32);
-          window.Draw(glass);
+          surface.Draw(glass);
           angle1.SetPosition(x * 32, y * 32);
-          window.Draw(angle1);
+          surface.Draw(angle1);
           break;
         case 'o':
           glass.SetPosition(x * 32, y * 32);
-          window.Draw(glass);
+          surface.Draw(glass);
           angle2.SetPosition(x * 32, y * 32);
-          window.Draw(angle2);
+          surface.Draw(angle2);
           break;
         case 'p':
           glass.SetPosition(x * 32, y * 32);
-          window.Draw(glass);
+          surface.Draw(glass);
           angle3.SetPosition(x * 32, y * 32);
-          window.Draw(angle3);
+          surface.Draw(angle3);
           break;
         case 'm':
           glass.SetPosition(x * 32, y * 32);
-          window.Draw(glass);
+          surface.Draw(glass);
           angle4.SetPosition(x * 32, y * 32);
-          window.Draw(angle4);
+          surface.Draw(angle4);
           break;
         case 'c':
           glass.SetPosition(x * 32, y * 32);
-          window.Draw(glass);
+          surface.Draw(glass);
           cle.SetPosition(x * 32, y * 32);
-          window.Draw(cle);
+          surface.Draw(cle);
           break;
         case 'd':
           serrure.SetPosition(x * 32, y * 32);
-          window.Draw(serrure);
+          surface.Draw(serrure);
           break;
 
         case 't':
           glass.SetPosition(x * 32, y * 32);
-          window.Draw(glass);
+          surface.Draw(glass);
           vortex.SetPosition(x * 32 + 16, y * 32 + 16);
           vortex.SetRotation(-tempo * 23);
-          window.Draw(vortex);
+          surface.Draw(vortex);
           break;
         case 'j':
           joueur.SetPosition(x * 32, y*32);
-          window.Draw(joueur);
+          surface.Draw(joueur);
           break;
       }
     }
@@ -472,7 +459,7 @@ void Level::Draw(smk::Window& window) {
 
   // affichage joueur;
   joueur.SetPosition(pos.x, pos.y);
-  window.Draw(joueur);
+  surface.Draw(joueur);
 }
 
 int Level::Evaluate() {
@@ -530,13 +517,12 @@ int Level::Evaluate() {
              Direction::Right,
          }) {
       next_position = state.position;
-      direction = dir;
-      mouvement = true;
+      direction_ = dir;
       win = false;
       lose = false;
       int travel = 0;
       const int max_travel = (width_ * height_);
-      while (mouvement && !lose && !win && travel < max_travel) {
+      while (direction_ != Direction::None && !lose && !win && travel < max_travel) {
         current_position = next_position;
         NextStep(on_win, on_lose);
         travel++;
@@ -608,7 +594,7 @@ void Level::Mutate(std::mt19937& random) {
   }
 }
 
-void Level::Init(smk::Window& window) {
+void Level::Init(smk::RenderTarget& surface) {
   for (int i = 0; i < (int)cases_.size(); ++i) {
     if (cases_[i] == 'j') {
       starting_point_ = {i % width_, i / width_};
@@ -620,7 +606,8 @@ void Level::Init(smk::Window& window) {
   anim = 0;
   pos.x = current_position.x * 32;
   pos.y = current_position.y * 32;
-  UpdateView(window);
+  (void)surface;
+  //UpdateView(surface);
 }
 
 void Level::PlaySoundInternal(const smk::SoundBuffer& snd) {

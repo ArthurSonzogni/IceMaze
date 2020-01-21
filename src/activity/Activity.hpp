@@ -9,6 +9,7 @@ class Activity {
   virtual ~Activity() = default;
 
   virtual void Draw() = 0;
+  virtual void Step() {}
 
   virtual void OnEnter() {}
   virtual void OnQuit() {}

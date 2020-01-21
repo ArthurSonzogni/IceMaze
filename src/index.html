@@ -1,58 +1,62 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     @google-analytics@
     <meta charset="utf-8">
     <title>IceMaze arthursonzogni@</title>
     <link rel="stylesheet" type="text/css" href="style.css">
-    <link rel="icon" type="image/png" href="./favicon.png">
-  </head>
-  <body>
+    <link rel="icon" type="image/png" sizes="64x64" href="./favicon.png">
+    <link rel="shortcut icon" type="image/png" sizes="64x64" href=“./favicon.png">
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+</head>
+
+<body>
 
     <div id="loading_page" class="vbox">
-      <div class="flex"></div>
-      <div class="hbox">
         <div class="flex"></div>
-        <div id="loading"></div>
+        <div class="hbox">
+            <div class="flex"></div>
+            <div id="loading"></div>
+            <div class="flex"></div>
+        </div>
         <div class="flex"></div>
-      </div>
-      <div class="flex"></div>
     </div>
 
     <canvas id="canvas" oncontextmenu="event.preventDefault()">
-      Chargement... 
+        Chargement...
     </canvas>
 
     <script>
-      var canvas = document.getElementById('canvas');
+        var canvas = document.getElementById('canvas');
 
-      // Alert the user if we have lost the WebGL context.
-      canvas.addEventListener("webglcontextlost", function(e) {
-        alert('WebGL context lost. You will need to reload the page.');
-        e.preventDefault();
-      }, false);
+        // Alert the user if we have lost the WebGL context.
+        canvas.addEventListener("webglcontextlost", function(e) {
+            alert('WebGL context lost. You will need to reload the page.');
+            e.preventDefault();
+        }, false);
 
-      function onResize() {
-        console.log("OnResize");
-        var positionInfo = canvas.getBoundingClientRect();
-        canvas.width = positionInfo.width;
-        canvas.height = positionInfo.height;
-      }
-      window.addEventListener("resize", onResize, true);
+        function onResize() {
+            canvas.width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+            canvas.height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+        }
+        window.addEventListener("resize", onResize, true);
 
-      window.Module = {
-        preRun: [],
-        postRun: [],
-        canvas: canvas,
-        onRuntimeInitialized: function() {
-          document.querySelector("#loading_page").remove();
-          window.setTimeout(onResize, 0);
-          window.setTimeout(onResize, 100);
-        },
-      };
-
+        window.Module = {
+            preRun: [],
+            postRun: [],
+            canvas: canvas,
+            onRuntimeInitialized: function() {
+                document.querySelector("#loading_page").remove();
+                window.setTimeout(onResize, 0);
+                window.setTimeout(onResize, 100);
+                window.setTimeout(onResize, 1000);
+                window.setTimeout(onResize, 10000);
+            },
+        };
     </script>
 
     <script async src="icemaze.js"></script>
-  </body>
+</body>
+
 </html>

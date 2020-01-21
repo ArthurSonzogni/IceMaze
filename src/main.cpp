@@ -12,10 +12,9 @@
 #include "activity/IntroScreen.hpp"
 #include "activity/Activity.hpp"
 #include "activity/LevelActivity.hpp"
-#include "activity/LevelExplorer.hpp"
+#include "activity/Menu.hpp"
 #include "activity/LevelGeneratorActivity.hpp"
 #include "activity/LevelGeneratorSizeSelector.hpp"
-#include "activity/Menu.hpp"
 #include "activity/Credit.hpp"
 #include "resources.hpp"
 
@@ -110,7 +109,7 @@ class ActivityManager {
     }
     skin_menu_->on_change = [&] { OnUpdateSkin(); };
     skin_menu_->on_escape = [&] { Display(main_menu_.get()); };
-    skin_menu_->on_enter = [&] { Display(main_menu_.get()); };
+    skin_menu_->on_enter = [&] { OnUpdateSkin(); Display(main_menu_.get()); };
 
     // Level generator size selector
     level_generator_size_selector_ =
@@ -133,11 +132,11 @@ class ActivityManager {
     };
 
     // Level pack activity
-    pack_explorer_ = std::make_unique<LevelExplorer>(window_);
+    pack_explorer_ = std::make_unique<Menu>(window_);
     pack_explorer_->entries = GetList(ResourcePath() + "/level/PackFile");
     pack_explorer_->save = 999;
     pack_explorer_->on_enter = [&] {
-      std::string pack = pack_explorer_->entries[pack_explorer_->choice];
+      std::string pack = pack_explorer_->entries[pack_explorer_->selected];
       level_explorer_->entries = GetList(ResourcePath() + "/level/" + pack + "/LevelList");
       level_explorer_->save = GetSave(pack);
       Display(level_explorer_.get());
@@ -145,7 +144,7 @@ class ActivityManager {
     pack_explorer_->on_escape = [&] { Display(play_menu_.get()); };
 
     // Level selection activity
-    level_explorer_ = std::make_unique<LevelExplorer>(window_);
+    level_explorer_ = std::make_unique<Menu>(window_);
     level_explorer_->on_enter = [&] { PlayLevel(); };
     level_explorer_->on_escape = [&] { Display(pack_explorer_.get()); };
 
@@ -177,15 +176,21 @@ class ActivityManager {
       if (skin_loaded)
         LoadResources();
     }
+
+    window_.PoolEvents();
+    activity_->Step();
+    window_.Clear(smk::Color::Black);
     activity_->Draw();
+#ifndef __EMSCRIPTEN__
+    window_.LimitFrameRate(60.f);
+#endif
+    window_.Display();
   }
 
   void PlayLevel() {
-    std::string pack = pack_explorer_->entries[pack_explorer_->choice];
-    std::string level = level_explorer_->entries[level_explorer_->choice];
-    {
-      auto lvl = Level(ResourcePath() + "/level/" + pack + "/" + level);
-    }
+    std::string pack = pack_explorer_->entries[pack_explorer_->selected];
+    std::string level = level_explorer_->entries[level_explorer_->selected];
+    auto lvl = Level(ResourcePath() + "/level/" + pack + "/" + level);
     level_activity_->level = Level(ResourcePath() + "/level/" + pack + "/" + level);
     level_activity_->level.Init(window_);
 
@@ -193,10 +198,10 @@ class ActivityManager {
   };
 
   void LevelWin() {
-    std::string pack = pack_explorer_->entries[pack_explorer_->choice];
-    int& choice = level_explorer_->choice;
+    std::string pack = pack_explorer_->entries[pack_explorer_->selected];
+    int& selected = level_explorer_->selected;
     int& save = level_explorer_->save;
-    if (choice == save) {
+    if (selected == save) {
       save++;
       SetSave(pack, save);
     }
@@ -220,8 +225,8 @@ class ActivityManager {
   std::unique_ptr<Menu> main_menu_;
   std::unique_ptr<Menu> play_menu_;
   std::unique_ptr<Menu> skin_menu_;
-  std::unique_ptr<LevelExplorer> pack_explorer_;
-  std::unique_ptr<LevelExplorer> level_explorer_;
+  std::unique_ptr<Menu> pack_explorer_;
+  std::unique_ptr<Menu> level_explorer_;
   std::unique_ptr<LevelActivity> level_activity_;
   std::unique_ptr<LevelGeneratorActivity> level_generator_activity_;
   std::unique_ptr<LevelGeneratorSizeSelector> level_generator_size_selector_;

@@ -25,7 +25,6 @@ void LevelGeneratorActivity::Draw() {
     level_activity_.Draw();
     return;
   }
-  window().PoolEvents();
 
   if (best_score_timeout_ > 1)
     generator->Compute();
@@ -40,7 +39,5 @@ void LevelGeneratorActivity::Draw() {
   level_activity_.level = generator->Best();
   level_activity_.level.Init(window());
 
-  window().Clear(smk::Color::Black);
   level_activity_.level.Draw(window());
-  window().Display();
 }

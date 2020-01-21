@@ -25,7 +25,6 @@ IntroScreen::~IntroScreen() {}
 void IntroScreen::Draw() {
 
   // Input.
-  window().PoolEvents();
   auto& input = window().input();
 
   if (input.IsKeyPressed(GLFW_KEY_ENTER) || input.IsCursorReleased()) {
@@ -46,8 +45,6 @@ void IntroScreen::Draw() {
   zoom_ *= std::pow(zoom_target / zoom_, 0.02);
   view.SetSize(window().width() / zoom_, window().height() / zoom_);
   window().SetView(view);
-
-  window().Clear(smk::Color::Black);
 
   auto intro_screen = smk::Sprite(texture_intro_screen_);
   intro_screen.SetPosition(0,0);
@@ -160,7 +157,5 @@ void IntroScreen::Draw() {
     window().Draw(rectangle);
   }
 
-  window().Display();
-  window().LimitFrameRate(60.f);
   time++;
 }

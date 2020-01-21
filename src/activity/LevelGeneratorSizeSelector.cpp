@@ -8,8 +8,6 @@ LevelGeneratorSizeSelector::LevelGeneratorSizeSelector(smk::Window& window):
   Activity(window) {}
 
 void LevelGeneratorSizeSelector::Draw() {
-  window().PoolEvents();
-
   auto& input = window().input();
   int previous_width = width;
   int previous_height = height;
@@ -36,7 +34,6 @@ void LevelGeneratorSizeSelector::Draw() {
     return;
   }
 
-  window().Clear(smk::Color::Blue);
   UpdateView();
 
   // Background
@@ -123,7 +120,6 @@ void LevelGeneratorSizeSelector::Draw() {
   window().Draw(sprite_key_enter);
 
   window().Display();
-  window().LimitFrameRate(60.0);
 }
 
 void LevelGeneratorSizeSelector::UpdateView() {

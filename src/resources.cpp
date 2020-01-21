@@ -238,7 +238,7 @@ void LoadResources() {
   sb_lose = smk::SoundBuffer(ResourcePath() + "/lose.wav");
 
   // Fonts.
-  font_arial = smk::Font(ResourcePath() + "/font_arial.ttf", 40);
+  font_arial = smk::Font(ResourcePath() + "/font_arial.ttf", 60);
   font_arial_20 = smk::Font(ResourcePath() + "/font_arial.ttf", 20);
 }
 

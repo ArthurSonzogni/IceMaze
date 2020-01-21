@@ -4,17 +4,19 @@
 #include "resources.hpp"
 #include "License.hpp"
 
-Credit::Credit(smk::Window& window) : Activity(window) {}
+Credit::Credit(smk::Window& window) : Activity(window), back_button_(window) {
+  back_button_.on_quit = [&] { on_quit(); };
+}
+
 void Credit::OnEnter() {
-  view_x = 0;
-  view_y = 0;
+  view_ = glm::vec2(0.f, 0.f);
+  view_speed_ = glm::vec2(0.f, 0.f);
+  last_cursor_position = window().input().cursor();
 }
 
 Credit::~Credit() {}
 
 void Credit::Draw() {
-  // Input.
-  window().PoolEvents();
   auto& input = window().input();
 
   if (input.IsKeyPressed(GLFW_KEY_ENTER) ||
@@ -24,14 +26,26 @@ void Credit::Draw() {
     return;
   }
 
-  if (input.IsKeyHold(GLFW_KEY_LEFT)) view_x -= 10;
-  if (input.IsKeyHold(GLFW_KEY_RIGHT)) view_x += 10;
-  if (input.IsKeyHold(GLFW_KEY_UP)) view_y -= 10;
-  if (input.IsKeyHold(GLFW_KEY_DOWN)) view_y += 10;
+  if (input.IsKeyHold(GLFW_KEY_LEFT)) view_.x -= 10;
+  if (input.IsKeyHold(GLFW_KEY_RIGHT)) view_.x += 10;
+  if (input.IsKeyHold(GLFW_KEY_UP)) view_.y -= 10;
+  if (input.IsKeyHold(GLFW_KEY_DOWN)) view_.y += 10;
+
+  if (input.IsCursorPressed()) {
+    last_cursor_position = input.cursor();
+  } else if (input.IsCursorHold() || input.IsCursorReleased()) {
+    auto diff = last_cursor_position - input.cursor();
+    view_ += diff;
+    view_speed_ += (diff - view_speed_) * 0.3f;
+    last_cursor_position = input.cursor();
+  } else {
+    view_ += view_speed_;
+    view_speed_ *= 0.9f;
+  }
 
   window().Clear({0.3, 0.3, 0.2, 1.0});
   smk::View view;
-  view.SetCenter(window().width() * 0.5 + view_x, window().height() * 0.5 + view_y);
+  view.SetCenter(window().width() * 0.5 + view_.x, window().height() * 0.5 + view_.y);
   view.SetSize(window().width(), window().height());
   window().SetView(view);
 
@@ -101,7 +115,6 @@ void Credit::Draw() {
     }
     y += 40;
   }
-
-  window().Display();
-  window().LimitFrameRate(30.f);
+  back_button_.Step();
+  back_button_.Draw();
 }

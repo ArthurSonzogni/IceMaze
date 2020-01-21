@@ -14,14 +14,14 @@ add_executable(icemaze
   src/LevelGenerator.hpp
   src/License.hpp
   src/activity/Activity.hpp
+  src/activity/BackButton.cpp
+  src/activity/BackButton.hpp
   src/activity/Credit.cpp
   src/activity/Credit.hpp
   src/activity/IntroScreen.cpp
   src/activity/IntroScreen.hpp
   src/activity/LevelActivity.cpp
   src/activity/LevelActivity.hpp
-  src/activity/LevelExplorer.cpp
-  src/activity/LevelExplorer.hpp
   src/activity/LevelGeneratorActivity.cpp
   src/activity/LevelGeneratorActivity.hpp
   src/activity/LevelGeneratorSizeSelector.cpp
@@ -31,6 +31,8 @@ add_executable(icemaze
   src/main.cpp
   src/resources.cpp
   src/resources.hpp
+  src/Shape.cpp
+  src/Shape.hpp
   src/util/auto_reset.hpp
 )
 target_compile_options(icemaze PRIVATE -Wall -Wextra -pedantic -Werror)

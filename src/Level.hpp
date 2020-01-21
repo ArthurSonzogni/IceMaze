@@ -9,6 +9,7 @@
 #include <vector>
 #include <array>
 #include <smk/Sound.hpp>
+#include <smk/RenderTarget.hpp>
 
 struct Position {
   int x;
@@ -25,15 +26,12 @@ struct Position {
   // clang-format on
 };
 
-namespace smk {
-class Window;
-}
-
 enum class Direction {
   Up,
   Down,
   Left,
   Right,
+  None,
 };
 
 class Level {
@@ -44,11 +42,11 @@ class Level {
   char getCase(Position pos);
   void setCase(Position pos, char c);
 
-  void Init(smk::Window& window);
-  void Step(smk::Window& window,
+  void Init(smk::RenderTarget& surface);
+  void Step(Direction input_direction,
             std::function<void()> on_win,
             std::function<void()> on_lose);
-  void Draw(smk::Window& window);
+  void Draw(smk::RenderTarget& surface);
 
   int height() { return height_; }
   int width() { return width_; }
@@ -60,6 +58,9 @@ class Level {
   static Level Random(int width, int height);
   void Mutate(std::mt19937& random);
 
+  bool IsMoving() { return direction_ != Direction::None; }
+  Direction GetDirection() { return direction_; }
+
  private:
   Direction Bounce(Direction direction, char bouncer);
   static bool CanBounce(Direction direction, char bouncer);
@@ -67,10 +68,9 @@ class Level {
 
   void NextStep(std::function<void()> on_win, std::function<void()> on_lose);
   void AnimationStep();
-  bool GetNewDirectionFromInput(smk::Window& window);
   void teleport();
   void getAutoTileInfo(int& gh, int& dh, int& db, int& gb, int xx, int yy);
-  void UpdateView(smk::Window& window);
+  void UpdateView(smk::RenderTarget& surface);
 
   std::string title_;
   std::string author_;
@@ -80,10 +80,9 @@ class Level {
   std::vector<int> cases_;
 
   int nb_cle = 0;
-  bool ismoving = false;
-  bool mouvement = false;
+  bool is_moving_ = false;
   int anim = 0;
-  Direction direction = Direction::Up;
+  Direction direction_ = Direction::Up;
 
   Position next_position;
   Position current_position;
