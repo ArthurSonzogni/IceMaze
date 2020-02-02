@@ -12,18 +12,8 @@
 #include <smk/RenderTarget.hpp>
 
 struct Position {
-  int x;
-  int y;
-
-  // clang-format off
-  bool operator<(const Position other) const {
-    if (x < other.x) return true;
-    if (x > other.x) return false;
-    if (y < other.y) return true;
-    if (y > other.y) return false;
-    return false;
-  }
-  // clang-format on
+  int x,y;
+  bool operator<(const Position other) const;
 };
 
 enum class Direction {
@@ -39,6 +29,9 @@ class Level {
   Level();
   Level(std::string filename);
 
+  int height() { return height_; }
+  int width() { return width_; }
+
   char getCase(Position pos);
   void setCase(Position pos, char c);
 
@@ -48,18 +41,12 @@ class Level {
             std::function<void()> on_lose);
   void Draw(smk::RenderTarget& surface);
 
-  int height() { return height_; }
-  int width() { return width_; }
-  Position starting_point() { return starting_point_; }
-  std::string author() { return author_; }
-  std::string title() { return title_; }
+  Direction GetDirection() { return direction_; }
 
+  // For the evolutionnary algorithm.
   int Evaluate();
   static Level Random(int width, int height);
   void Mutate(std::mt19937& random);
-
-  bool IsMoving() { return direction_ != Direction::None; }
-  Direction GetDirection() { return direction_; }
 
  private:
   Direction Bounce(Direction direction, char bouncer);
@@ -86,12 +73,11 @@ class Level {
 
   Position next_position;
   Position current_position;
-  Position pos;
+  Position pos; // Interpolated position.
 
   int tempo = 0;
 
-  float view_x;
-  float view_y;
+  glm::vec2 view_;
   float view_speed = 1.0;
 
   bool in_evaluate_ = false;

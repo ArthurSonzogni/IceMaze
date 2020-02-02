@@ -37,7 +37,7 @@ void LevelActivity::Step() {
   else if (input.IsKeyHold(GLFW_KEY_RIGHT)) direction = Direction::Right;
   // clang-format on
 
-  if (!ready_for_input_ || level.IsMoving()) {
+  if (!ready_for_input_ || level.GetDirection() != Direction::None) {
     ready_for_input_ = true;
     cursor_anchor_ = input.cursor();
   } else {

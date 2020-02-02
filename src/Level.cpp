@@ -11,25 +11,29 @@
 
 void NOTREACHED() {}
 
-using namespace std;
-
-Level::Level() {
-  view_speed = 1.0;
+// clang-format off
+bool Position::operator<(const Position other) const {
+  if (x < other.x) return true;
+  if (x > other.x) return false;
+  if (y < other.y) return true;
+  if (y > other.y) return false;
+  return false;
 }
+// clang-format on
+
+Level::Level() = default;
 
 Level::Level(std::string filename) : Level() {
   std::ifstream flux(filename.c_str());
   if (!flux)
     return;
   std::string ligne;
-  // INFORMATION CARTE
   std::getline(flux, title_);
   std::getline(flux, author_);
   std::getline(flux, ligne);
   width_ = std::stoi(ligne);
   std::getline(flux, ligne);
   height_ = std::stoi(ligne);
-  // LECTURE CARTE
   cases_ = std::vector<int>(width_ * height_);
   for (int y = 0; y < height_; y++) {
     std::getline(flux, ligne);
@@ -303,32 +307,21 @@ void Level::NextStep(std::function<void()> on_win,
 }
 
 void Level::UpdateView(smk::RenderTarget& surface) {
-  float target_view_x = width_ * 32.f / 2.f;
-  if (width_ * 32 > surface.width()) {
-    target_view_x = pos.x + 16.0;
-    target_view_x =
-        std::min(width_ * 32.f - surface.width() / 2.f, target_view_x);
-    target_view_x = std::max(surface.width() / 2.f, target_view_x);
-  }
+  auto target_view = glm::vec2(pos.x, pos.y);
+  auto view_min = surface.dimension() * 0.5f;
+  auto view_max =
+      glm::vec2(width_, height_) * 32.f - surface.dimension() * 0.5f;
+  auto diff = glm::max(glm::vec2(), view_min - view_max);
+  view_min -= diff * 0.5f;
+  view_max += diff * 0.5f;
+  target_view = glm::min(view_max, glm::max(view_min, target_view));
 
-  float target_view_y = height_ * 32.f / 2.f;
-  if (height_ * 32 > surface.height()) {
-    target_view_y = pos.y + 16.0;
-    target_view_y =
-        std::min(height_ * 32.f - surface.height() / 2.f, target_view_y);
-    target_view_y = std::max(surface.height() / 2.f, target_view_y);
-  }
-
-  view_x += (target_view_x - view_x) * view_speed;
-  view_y += (target_view_y - view_y) * view_speed;
+  view_ += (target_view - view_) * view_speed;
   view_speed += (0.05 - view_speed) * 0.01;
 
   smk::View view;
-  view.SetSize(int(surface.width()),  //
-               int(surface.height()));
-  view.SetCenter(int(width_ * 32 * 0.5),  //
-                 int(height_ * 32 * 0.5));
-  view.SetCenter(view_x, view_y);
+  view.SetSize(surface.dimension());
+  view.SetCenter(view_);
   surface.SetView(view);
 }
 
@@ -450,7 +443,7 @@ void Level::Draw(smk::RenderTarget& surface) {
           surface.Draw(vortex);
           break;
         case 'j':
-          joueur.SetPosition(x * 32, y*32);
+          joueur.SetPosition(x * 32, y * 32);
           surface.Draw(joueur);
           break;
       }
@@ -501,11 +494,11 @@ int Level::Evaluate() {
   std::function<void()> on_lose = [&lose]() { lose = true; };
 
   int number_of_walls = 0;
-  for(auto& it : cases_)
+  for (auto& it : cases_)
     number_of_walls += (it == '1');
 
   int max_width = 0;
-  while(!to_be_handled.empty()) {
+  while (!to_be_handled.empty()) {
     max_width = std::max(max_width, int(to_be_handled.size()));
     State state = to_be_handled.front();
     to_be_handled.pop();
@@ -522,7 +515,8 @@ int Level::Evaluate() {
       lose = false;
       int travel = 0;
       const int max_travel = (width_ * height_);
-      while (direction_ != Direction::None && !lose && !win && travel < max_travel) {
+      while (direction_ != Direction::None && !lose && !win &&
+             travel < max_travel) {
         current_position = next_position;
         NextStep(on_win, on_lose);
         travel++;
@@ -559,7 +553,7 @@ Level Level::Random(int width, int height) {
     }
   }
   level.setCase({1, 1}, 's');
-  level.setCase({width/2, height/2}, 'j');
+  level.setCase({width / 2, height / 2}, 'j');
   return level;
 }
 
@@ -581,15 +575,27 @@ void Level::Mutate(std::mt19937& random) {
   // Add a random block.
   {
     int p = std::uniform_int_distribution<int>(0, 12)(random);
-    switch(p) {
-      case 0: cases_[p] = '0'; break;
-      case 1: cases_[p] = 'l'; break;
-      case 2: cases_[p] = 'o'; break;
-      case 3: cases_[p] = 'p'; break;
-      case 4: cases_[p] = 'm'; break;
-      //case 5: cases_[p] = 'i'; break;
-      //case 6: cases_[p] = 't'; break;
-      default:  cases_[p] = '1'; break;
+    switch (p) {
+      case 0:
+        cases_[p] = '0';
+        break;
+      case 1:
+        cases_[p] = 'l';
+        break;
+      case 2:
+        cases_[p] = 'o';
+        break;
+      case 3:
+        cases_[p] = 'p';
+        break;
+      case 4:
+        cases_[p] = 'm';
+        break;
+      // case 5: cases_[p] = 'i'; break;
+      // case 6: cases_[p] = 't'; break;
+      default:
+        cases_[p] = '1';
+        break;
     }
   }
 }
@@ -607,7 +613,7 @@ void Level::Init(smk::RenderTarget& surface) {
   pos.x = current_position.x * 32;
   pos.y = current_position.y * 32;
   (void)surface;
-  //UpdateView(surface);
+  // UpdateView(surface);
 }
 
 void Level::PlaySoundInternal(const smk::SoundBuffer& snd) {
