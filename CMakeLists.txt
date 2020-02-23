@@ -85,5 +85,5 @@ if(CMAKE_CXX_COMPILER MATCHES "/em\\+\\+(-[a-zA-Z0-9.])?$")
   endforeach()
 endif()
 
-install(TARGETS icemaze RUNTIME DESTINATION "bin")
+install(TARGETS icemaze RUNTIME DESTINATION bin)
 install(DIRECTORY resources DESTINATION share/icemaze)

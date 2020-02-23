@@ -54,9 +54,11 @@ parts:
     source-type: git
     source-depth: 1
     stage-packages:
+      - libpulse0
       - libgl1-mesa-glx
     build-packages:
       - libglu-dev
+      - libpulse-dev
       - xorg-dev
     override-build: |
       $SNAPCRAFT_STAGE/cmake/bin/cmake \

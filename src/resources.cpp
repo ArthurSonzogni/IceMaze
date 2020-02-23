@@ -20,20 +20,23 @@ std::string ResourcePath() {
   auto SNAP = GetEnvironmentVariable("SNAP");
 
   std::vector<std::string> path_list = {
-    // Application installed using snapcraft.
-    SNAP + "/usr/local/share/icemaze/resources",
+      // Application installed using snapcraft.
+      SNAP + "/share/icemaze/resources",
 
-    // Application installed using "sudo make install"
-    "/usr/local/share/icemaze/resources",
+      // Application installed using "sudo make install"
+      "/usr/local/share/icemaze/resources",
 
-    // Code build and run inside ${CMAKE_CURRENT_DIRECTORY}/build
-    "./resources",
+      // Application installed using "sudo make install"
+      "/usr/share/icemaze/resources",
 
-    // Code build and run inside ${CMAKE_CURRENT_DIRECTORY}
-    "../resources",
+      // Code build and run inside ${CMAKE_CURRENT_DIRECTORY}/build
+      "./resources",
 
-    // Code build for WebAssembly.
-    "/resources",
+      // Code build and run inside ${CMAKE_CURRENT_DIRECTORY}
+      "../resources",
+
+      // Code build for WebAssembly.
+      "/resources",
   };
 
   for (auto& path : path_list) {
