@@ -21,6 +21,7 @@ apps:
     plugs:
       - audio-playback
       - opengl
+      - pulseaudio
       - x11
 parts:
   # Build cmake from source to get a recent version.
@@ -63,8 +64,8 @@ parts:
     source-type: git
     source-depth: 1
     stage-packages:
-      - libpulse0
       - libgl1-mesa-glx
+      - libpulse0
     build-packages:
       - libglu-dev
       - libpulse-dev
