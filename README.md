@@ -41,4 +41,3 @@ refactored this year, its code is still a bit "low quality".
 ![logo](https://arthursonzogni.com/IceMaze/carrousel/3.png)
 ![logo](https://arthursonzogni.com/IceMaze/carrousel/4.png)
 ![logo](https://arthursonzogni.com/IceMaze/carrousel/5.png)
-
