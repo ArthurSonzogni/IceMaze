@@ -7,9 +7,9 @@ description: |
   You play a block moving on the ice. Each time you move, you are forced to
   slide until a wall stops you. Reaching the finish position will not be easy.
 
-  About twenty levels and various blocks (locks, corner, wormhole,…)
-
-  A level generator.
+  Contains:
+    - About twenty levels and various blocks (locks, corner, wormhole,…)
+    - A level generator.
 
 icon: ./resources/intro_screen.png
 grade: stable
