@@ -21,8 +21,8 @@ apps:
     plugs:
       - audio-playback
       - opengl
-      - pulseaudio
       - x11
+      - pulseaudio
 parts:
   # Build cmake from source to get a recent version.
   cmake:
