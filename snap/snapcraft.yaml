@@ -1,4 +1,3 @@
----
 name: icemaze
 version: '0.1'
 summary: A sliding block adventure.
@@ -11,10 +10,11 @@ description: |
   Contains:
     - About twenty levels and various blocks (locks, corner, wormhole,…)
     - A level generator.
-icon: "./resources/intro_screen.png"
+icon: "../resources/intro_screen.png"
 grade: stable
 confinement: strict
 base: core18
+
 apps:
   icemaze:
     command: desktop-launch ${SNAP}/bin/icemaze
@@ -23,7 +23,9 @@ apps:
     - opengl
     - x11
     - pulseaudio
+
 parts:
+
   cmake:
     source: https://github.com/Kitware/CMake
     source-type: git
@@ -46,6 +48,7 @@ parts:
     - libncurses5
     - libtinfo5
     prime: []
+
   desktop-glib-only:
     plugin: make
     source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
@@ -54,6 +57,7 @@ parts:
     - libglib2.0-dev
     stage-packages:
     - libglib2.0-bin
+
   icemaze:
     after:
     - cmake
@@ -76,6 +80,7 @@ parts:
         $SNAPCRAFT_PART_SRC
       make -j ${SNAPCRAFT_PARALLEL_BUILD_COUNT}
       make install
+
 passthrough:
   title: icemaze
   license: MIT
