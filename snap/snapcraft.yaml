@@ -10,7 +10,7 @@ description: |
   Contains:
     - About twenty levels and various blocks (locks, corner, wormhole,…)
     - A level generator.
-icon: "../resources/intro_screen.png"
+icon: "./resources/intro_screen.png"
 grade: stable
 confinement: strict
 base: core18
