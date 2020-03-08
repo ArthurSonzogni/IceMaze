@@ -1,3 +1,4 @@
+---
 name: icemaze
 version: '0.1'
 summary: A sliding block adventure.
@@ -10,8 +11,7 @@ description: |
   Contains:
     - About twenty levels and various blocks (locks, corner, wormhole,…)
     - A level generator.
-
-icon: ./resources/intro_screen.png
+icon: "./resources/intro_screen.png"
 grade: stable
 confinement: strict
 base: core18
@@ -19,12 +19,11 @@ apps:
   icemaze:
     command: desktop-launch ${SNAP}/bin/icemaze
     plugs:
-      - audio-playback
-      - opengl
-      - x11
-      - pulseaudio
+    - audio-playback
+    - opengl
+    - x11
+    - pulseaudio
 parts:
-  # Build cmake from source to get a recent version.
   cmake:
     source: https://github.com/Kitware/CMake
     source-type: git
@@ -39,37 +38,37 @@ parts:
       make -j ${SNAPCRAFT_PARALLEL_BUILD_COUNT}
       make install
     build-packages:
-      - build-essential
-      - libssl-dev
-      - libncurses5-dev
+    - build-essential
+    - libssl-dev
+    - libncurses5-dev
     stage-packages:
-      - libssl1.1
-      - libncurses5
-      - libtinfo5
+    - libssl1.1
+    - libncurses5
+    - libtinfo5
     prime: []
-
   desktop-glib-only:
-    plugin: make	   
-    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git	   
-    source-subdir: glib-only	   
-    build-packages:	   
-    - libglib2.0-dev	   
-    stage-packages:	   
+    plugin: make
+    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+    source-subdir: glib-only
+    build-packages:
+    - libglib2.0-dev
+    stage-packages:
     - libglib2.0-bin
-
   icemaze:
-    after: [cmake, desktop-glib-only]
+    after:
+    - cmake
+    - desktop-glib-only
     plugin: cmake
     source: https://github.com/ArthurSonzogni/icemaze
     source-type: git
     source-depth: 1
     stage-packages:
-      - libgl1-mesa-glx
-      - libpulse0
+    - libgl1-mesa-glx
+    - libpulse0
     build-packages:
-      - libglu-dev
-      - libpulse-dev
-      - xorg-dev
+    - libglu-dev
+    - libpulse-dev
+    - xorg-dev
     override-build: |
       $SNAPCRAFT_STAGE/cmake/bin/cmake \
         -DCMAKE_INSTALL_PREFIX=$SNAPCRAFT_PART_INSTALL \
@@ -77,7 +76,6 @@ parts:
         $SNAPCRAFT_PART_SRC
       make -j ${SNAPCRAFT_PARALLEL_BUILD_COUNT}
       make install
-
 passthrough:
   title: icemaze
   license: MIT
