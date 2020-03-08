@@ -178,9 +178,10 @@ class ActivityManager {
     }
 
     window_.PoolEvents();
-    activity_->Step();
     window_.Clear(smk::Color::Black);
-    activity_->Draw();
+    auto activity = activity_;
+    activity->Step();
+    activity->Draw();
 #ifndef __EMSCRIPTEN__
     window_.LimitFrameRate(60.f);
 #endif

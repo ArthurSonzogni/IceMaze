@@ -119,27 +119,35 @@ void Menu::Step() {
   for (int i = 0; i < (int)entries.size(); i++) {
     entry_data_[i].position = glm::vec2(0.f, item_space * i);
 
-    auto cursor_relative =
-        (cursor + cursor_scrolling_ - entry_data_[i].position) * 2.f;
-    bool& hover = entry_data_[i].hover;
-    bool hover_previous = hover;
-    hover = cursor_relative.x > -button_width_ &&
-            cursor_relative.x < +button_width_ &&
-            cursor_relative.y > -button_height_ &&
-            cursor_relative.y < +button_height_;
-
-    if (hover && !hover_previous) {
-      selected = i;
-      on_change();
+    if (i > std::min(save, int(entries.size() - 1))) {
+      entry_data_[i].hover_position = 0.f;
+      entry_data_[i].hover_alpha = 0.1f;
+      continue;
     }
 
-    if (is_using_keyboard_)
+    bool hover;
+    if (is_using_keyboard_) {
       hover = (selected == i);
+    } else {
+      auto cursor_relative =
+          (cursor + cursor_scrolling_ - entry_data_[i].position) * 2.f;
+      bool& cursor_hover = entry_data_[i].hover;
+      bool hover_previous = cursor_hover;
+      cursor_hover = cursor_relative.x > -button_width_ &&
+              cursor_relative.x < +button_width_ &&
+              cursor_relative.y > -button_height_ &&
+              cursor_relative.y < +button_height_;
 
-    if (hover && click) {
-      smk::Vibrate(5);
-      selected_by_touch = true;
-      selected = i;
+      hover = cursor_hover;
+      if (cursor_hover && !hover_previous) {
+        selected = i;
+        on_change();
+      }
+      if (hover && click) {
+        smk::Vibrate(5);
+        selected_by_touch = true;
+        selected = i;
+      }
     }
 
     float f = 8.0 * (focus_step / (4.0 + focus_step));
@@ -169,7 +177,6 @@ void Menu::Step() {
 }
 
 void Menu::Draw() {
-  Step();
 
   // Background
   {
