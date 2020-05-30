@@ -26,29 +26,6 @@ apps:
 
 parts:
 
-  cmake:
-    source: https://github.com/Kitware/CMake
-    source-type: git
-    source-depth: 1
-    plugin: cmake
-    override-build: |
-      mkdir -p build
-      cd build
-      cmake \
-        -DCMAKE_INSTALL_PREFIX=$SNAPCRAFT_STAGE/cmake \
-        $SNAPCRAFT_PART_SRC
-      make -j ${SNAPCRAFT_PARALLEL_BUILD_COUNT}
-      make install
-    build-packages:
-    - build-essential
-    - libssl-dev
-    - libncurses5-dev
-    stage-packages:
-    - libssl1.1
-    - libncurses5
-    - libtinfo5
-    prime: []
-
   desktop-glib-only:
     plugin: make
     source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
@@ -60,9 +37,9 @@ parts:
 
   icemaze:
     after:
-    - cmake
     - desktop-glib-only
     plugin: cmake
+    build-snaps: [cmake/latest/edge] # We need cmake >= 3.11
     source: https://github.com/ArthurSonzogni/icemaze
     source-type: git
     source-depth: 1
@@ -74,7 +51,7 @@ parts:
     - libpulse-dev
     - xorg-dev
     override-build: |
-      $SNAPCRAFT_STAGE/cmake/bin/cmake \
+      /snap/bin/cmake \
         -DCMAKE_INSTALL_PREFIX=$SNAPCRAFT_PART_INSTALL \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
         $SNAPCRAFT_PART_SRC
