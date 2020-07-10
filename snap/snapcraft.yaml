@@ -1,5 +1,5 @@
 name: icemaze
-version: '0.1'
+adopt-info: icemaze
 summary: A sliding block adventure.
 description: |
   IceMaze is puzzle game.
@@ -57,6 +57,7 @@ parts:
         $SNAPCRAFT_PART_SRC
       make -j ${SNAPCRAFT_PARALLEL_BUILD_COUNT}
       make install
+      snapcraftctl set-version "$(git rev-list --count HEAD)"
 
 passthrough:
   title: icemaze
