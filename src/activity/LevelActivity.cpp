@@ -5,6 +5,7 @@
 #include <cmath>
 #include <smk/Color.hpp>
 #include <smk/Vibrate.hpp>
+#include <smk/Input.hpp>
 #include "activity/LevelActivity.hpp"
 #include "resources.hpp"
 

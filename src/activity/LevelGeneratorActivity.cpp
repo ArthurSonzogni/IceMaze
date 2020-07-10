@@ -1,5 +1,6 @@
 #include "activity/LevelGeneratorActivity.hpp"
 #include <smk/Color.hpp>
+#include <smk/Input.hpp>
 #include "resources.hpp"
 
 LevelGeneratorActivity::LevelGeneratorActivity(smk::Window& window)

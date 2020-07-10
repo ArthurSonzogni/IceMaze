@@ -2,6 +2,7 @@
 #include "resources.hpp"
 #include "smk/Color.hpp"
 #include "smk/Shape.hpp"
+#include <smk/Input.hpp>
 #include "smk/Text.hpp"
 
 LevelGeneratorSizeSelector::LevelGeneratorSizeSelector(smk::Window& window):

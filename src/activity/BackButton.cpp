@@ -7,6 +7,7 @@
 #include <smk/Color.hpp>
 #include <smk/Shape.hpp>
 #include <smk/Text.hpp>
+#include <smk/Input.hpp>
 #include "resources.hpp"
 
 const glm::vec4 backgroung_color = {1.0, 1.0, 1.0, 0.2};

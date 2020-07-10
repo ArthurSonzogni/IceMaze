@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <smk/Color.hpp>
+#include <smk/Input.hpp>
 #include <smk/Shape.hpp>
 #include <smk/Text.hpp>
 #include <smk/Vibrate.hpp>

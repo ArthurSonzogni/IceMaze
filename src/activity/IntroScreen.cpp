@@ -2,6 +2,7 @@
 #include <smk/Color.hpp>
 #include "resources.hpp"
 #include <smk/Shape.hpp>
+#include <smk/Input.hpp>
 
 namespace {
 float width = 128;

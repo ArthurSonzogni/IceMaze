@@ -1,6 +1,7 @@
 #include "activity/Credit.hpp"
 #include <smk/Color.hpp>
 #include <smk/Shape.hpp>
+#include <smk/Input.hpp>
 #include "resources.hpp"
 #include "License.hpp"
 
