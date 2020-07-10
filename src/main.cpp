@@ -159,7 +159,6 @@ class ActivityManager {
     credit_->on_quit = [&] { Display(main_menu_.get()); };
 
     Display(intro_screen_.get());
-    Loop();
   }
 
   void Display(Activity* activity) {
@@ -217,6 +216,10 @@ class ActivityManager {
     LoadResources();
   }
 
+  void Run() {
+    window_.ExecuteMainLoop([&] { Loop(); });
+  }
+
  private:
   bool skin_loaded = false;
 
@@ -235,9 +238,6 @@ class ActivityManager {
 };
 
 std::unique_ptr<ActivityManager> activity_manager;
-void MainLoop() {
-  activity_manager->Loop();
-}
 
 int main() {
   smk::Audio audio;
@@ -254,12 +254,6 @@ int main() {
 #endif
 
   activity_manager = std::make_unique<ActivityManager>();
-#ifdef __EMSCRIPTEN__
-  emscripten_set_main_loop(&MainLoop, 0, 1);
-#else
-  while(!quit)
-    MainLoop();
-#endif
-  activity_manager.reset();
+  activity_manager->Run();
   return EXIT_SUCCESS;
 }
