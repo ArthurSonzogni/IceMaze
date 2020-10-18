@@ -39,7 +39,7 @@ void Menu::Step() {
 
   auto& input = window().input();
   auto cursor = input.cursor();
-  cursor -= window().dimension() * 0.5f;
+  cursor -= window().dimensions() * 0.5f;
   cursor.y += scrolling_;
 
   int previous_choice = selected;
@@ -52,7 +52,7 @@ void Menu::Step() {
     focusable = true;
     focus_step = 0;
   } else if (has_pressed_) {
-    if (input.IsCursorHold()) {
+    if (input.IsCursorHeld()) {
       auto diff = (last_cursor_position - cursor).y;
       last_cursor_position = cursor.y;
       cursor_scrolling_ = first_cursor_position - last_cursor_position;
@@ -186,7 +186,7 @@ void Menu::Draw() {
     view.SetSize(window().width(), window().height());
     window().SetView(view);
     auto intro_screen = smk::Sprite(texture_intro_screen_);
-    intro_screen.SetPosition(window().dimension() * 0.5f);
+    intro_screen.SetPosition(window().dimensions() * 0.5f);
     intro_screen.SetCenter(texture_intro_screen_.width() * 0.5f,
                            texture_intro_screen_.height() * 0.5f);
     intro_screen.SetScale(

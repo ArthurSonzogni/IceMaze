@@ -34,7 +34,7 @@ void Credit::Draw() {
 
   if (input.IsCursorPressed()) {
     last_cursor_position = input.cursor();
-  } else if (input.IsCursorHold() || input.IsCursorReleased()) {
+  } else if (input.IsCursorHeld() || input.IsCursorReleased()) {
     auto diff = last_cursor_position - input.cursor();
     view_ += diff;
     view_speed_ += (diff - view_speed_) * 0.3f;

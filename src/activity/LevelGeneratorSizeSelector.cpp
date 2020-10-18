@@ -38,7 +38,7 @@ void LevelGeneratorSizeSelector::Draw() {
   UpdateView();
 
   // Background
-  auto view = window().GetView();
+  auto view = window().view();
   float x0 = int(view.Left()) / 32 * 32 - 32;
   float x1 = int(view.Right()) / 32 * 32 + 32;
   float y0 = int(view.Top()) / 32 * 32 - 32;

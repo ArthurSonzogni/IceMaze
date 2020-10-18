@@ -1,9 +1,9 @@
 include(FetchContent)
-set(FETCHCONTENT_UPDATES_DISCONNECTED FALSE)
 
+set(FETCHCONTENT_UPDATES_DISCONNECTED TRUE)
 FetchContent_Declare(smk
   GIT_REPOSITORY https://github.com/ArthurSonzogni/smk
-  GIT_TAG 4e3adfa250a6a6e81eb222604ce4a76c37723560
+  GIT_TAG f8813a7dc254e0cc31e46d23dae94757cb67eb49
 )
 
 FetchContent_GetProperties(smk)

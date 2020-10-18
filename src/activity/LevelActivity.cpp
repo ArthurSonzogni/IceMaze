@@ -45,7 +45,7 @@ void LevelActivity::Step() {
     if (input.IsCursorPressed()) {
       cursor_anchor_ = input.cursor();
       ready_for_input_ = true;
-    } else if (ready_for_input_ && input.IsCursorHold()) {
+    } else if (ready_for_input_ && input.IsCursorHeld()) {
       float trigger = 32.f;
       glm::vec2 cursor = input.cursor();
       glm::vec2 diff = cursor - cursor_anchor_;

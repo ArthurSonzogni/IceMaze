@@ -1,4 +1,5 @@
 #include "Level.hpp"
+#include <cstdint>
 #include <queue>
 #include <random>
 #include <set>
@@ -69,8 +70,8 @@ void Level::setCase(Position pos, char c) {
 
 void Level::getAutoTileInfo(int& gh, int& dh, int& db, int& gb, int x, int y) {
   // enregistrement des cases_ adjacentes
-  int c = 0;
-  int pow = 0b100000000;
+  uint16_t c = 0;
+  uint16_t pow = 0b100000000;
   for (int dy = -1; dy <= 1; dy++) {
     for (int dx = -1; dx <= 1; dx++) {
       if (getCase({x + dx, y + dy}) == '1' ||
@@ -83,47 +84,50 @@ void Level::getAutoTileInfo(int& gh, int& dh, int& db, int& gb, int x, int y) {
   // clang-format off
   switch (c & 0b110100000) {
     case 0b000000000: gh = 1; break;
-    case 0b100000000: gh = 1; break;
-    case 0b010000000: gh = 7; break;
     case 0b000100000: gh = 5; break;
+    case 0b010000000: gh = 7; break;
     case 0b010100000: gh = 12; break;
-    case 0b110000000: gh = 7; break;
+    case 0b100000000: gh = 1; break;
     case 0b100100000: gh = 5; break;
+    case 0b110000000: gh = 7; break;
     case 0b110100000: gh = 13; break;
+  }
+
+  switch (c & 0b000100110) {
+    case 0b000000000: gb = 3; break;
+    case 0b000000010: gb = 7; break;
+    case 0b000000100: gb = 3; break;
+    case 0b000000110: gb = 7; break;
+    case 0b000100000: gb = 8; break;
+    case 0b000100010: gb = 10; break;
+    case 0b000100100: gb = 8; break;
+    case 0b000100110: gb = 13; break;
+  }
+
+  switch (c & 0b000001011) {
+    case 0b000000000: db = 4; break;
+    case 0b000000001: db = 4; break;
+    case 0b000000010: db = 6; break;
+    case 0b000000011: db = 6; break;
+    case 0b000001000: db = 8; break;
+    case 0b000001001: db = 8; break;
+    case 0b000001010: db = 9; break;
+    case 0b000001011: db = 13; break;
   }
 
   switch (c & 0b011001000) {
     case 0b000000000: dh = 2; break;
-    case 0b010000000: dh = 6; break;
-    case 0b001000000: dh = 2; break;
     case 0b000001000: dh = 5; break;
-    case 0b011000000: dh = 6; break;
+    case 0b001000000: dh = 2; break;
     case 0b001001000: dh = 5; break;
+    case 0b010000000: dh = 6; break;
     case 0b010001000: dh = 11; break;
+    case 0b011000000: dh = 6; break;
     case 0b011001000: dh = 13; break;
   }
-  switch (c & 0b000100110) {
-    case 0b000000000: gb = 3; break;
-    case 0b000100000: gb = 8; break;
-    case 0b000000100: gb = 3; break;
-    case 0b000000010: gb = 7; break;
-    case 0b000100100: gb = 8; break;
-    case 0b000000110: gb = 7; break;
-    case 0b000100010: gb = 10; break;
-    case 0b000100110: gb = 13; break;
-  }
-  switch (c & 0b000001011) {
-    case 0b000000000: db = 4; break;
-    case 0b000001000: db = 8; break;
-    case 0b000000010: db = 6; break;
-    case 0b000000001: db = 4; break;
-    case 0b000001010: db = 9; break;
-    case 0b000000011: db = 6; break;
-    case 0b000001001: db = 8; break;
-    case 0b000001011: db = 13; break;
-  }
+
+  // clang-format on
 }
-// clang-format on
 
 void Level::teleport() {
   size_t j = current_position.x + width_ * current_position.y;
@@ -308,9 +312,9 @@ void Level::NextStep(std::function<void()> on_win,
 
 void Level::UpdateView(smk::RenderTarget& surface) {
   auto target_view = glm::vec2(pos.x, pos.y);
-  auto view_min = surface.dimension() * 0.5f;
+  auto view_min = surface.dimensions() * 0.5f;
   auto view_max =
-      glm::vec2(width_, height_) * 32.f - surface.dimension() * 0.5f;
+      glm::vec2(width_, height_) * 32.f - surface.dimensions() * 0.5f;
   auto diff = glm::max(glm::vec2(), view_min - view_max);
   view_min -= diff * 0.5f;
   view_max += diff * 0.5f;
@@ -320,7 +324,7 @@ void Level::UpdateView(smk::RenderTarget& surface) {
   view_speed += (0.05 - view_speed) * 0.01;
 
   smk::View view;
-  view.SetSize(surface.dimension());
+  view.SetSize(surface.dimensions());
   view.SetCenter(view_);
   surface.SetView(view);
 }
