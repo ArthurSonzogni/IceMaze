@@ -43,6 +43,7 @@ parts:
     source-depth: 1
     stage-packages:
       - libgl1-mesa-glx
+      - libopengl0
       - libpulse0
     build-packages:
       - libglu-dev
