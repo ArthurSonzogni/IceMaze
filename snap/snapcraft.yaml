@@ -13,19 +13,18 @@ description: |
 icon: "./resources/intro_screen.png"
 grade: stable
 confinement: strict
-base: core18
+base: core20
 
 apps:
   icemaze:
     command: desktop-launch ${SNAP}/bin/icemaze
     plugs:
-    - audio-playback
-    - opengl
-    - x11
-    - pulseaudio
+      - audio-playback
+      - opengl
+      - x11
+      - pulseaudio
 
 parts:
-
   desktop-glib-only:
     plugin: make
     source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
@@ -39,25 +38,22 @@ parts:
     after:
     - desktop-glib-only
     plugin: cmake
-    build-snaps: [cmake/latest/edge] # We need cmake >= 3.11
     source: https://github.com/ArthurSonzogni/icemaze
     source-type: git
     source-depth: 1
     stage-packages:
-    - libgl1-mesa-glx
-    - libpulse0
+      - libgl1-mesa-glx
+      - libpulse0
     build-packages:
-    - libglu-dev
-    - libpulse-dev
-    - xorg-dev
+      - libglu-dev
+      - libpulse-dev
+      - xorg-dev
     override-build: |
-      /snap/bin/cmake \
-        -DCMAKE_INSTALL_PREFIX=$SNAPCRAFT_PART_INSTALL \
-        -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-        $SNAPCRAFT_PART_SRC
-      make -j ${SNAPCRAFT_PARALLEL_BUILD_COUNT}
-      make install
+      snapcraftctl build
       snapcraftctl set-version "$(git rev-list --count HEAD)"
+    cmake-parameters:
+      - -DCMAKE_INSTALL_PREFIX=/usr
+      - -DCMAKE_BUILD_TYPE=Release
 
 passthrough:
   title: icemaze
