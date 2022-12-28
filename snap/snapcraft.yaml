@@ -10,6 +10,7 @@ description: |
   Contains:
     - About twenty levels and various blocks (locks, corner, wormhole,…)
     - A level generator.
+
 icon: "./resources/intro_screen.png"
 grade: stable
 confinement: strict
@@ -17,7 +18,7 @@ base: core20
 
 apps:
   icemaze:
-    command: desktop-launch ${SNAP}/bin/icemaze
+    command: bin/desktop-launch $SNAP/usr/bin/icemaze
     plugs:
       - audio-playback
       - opengl
@@ -40,18 +41,17 @@ parts:
     plugin: cmake
     source: https://github.com/ArthurSonzogni/icemaze
     source-type: git
-    source-depth: 1
     stage-packages:
       - libgl1-mesa-glx
       - libopengl0
       - libpulse0
     build-packages:
-      - libglu-dev
+      - libglu1-mesa-dev
       - libpulse-dev
       - xorg-dev
-    override-build: |
-      snapcraftctl build
-      snapcraftctl set-version "$(git rev-list --count HEAD)"
+    override-pull: |
+      snapcraftctl pull
+      snapcraftctl set-version $(git rev-list --count HEAD)
     cmake-parameters:
       - -DCMAKE_INSTALL_PREFIX=/usr
       - -DCMAKE_BUILD_TYPE=Release
